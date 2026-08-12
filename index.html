@@ -3,506 +3,668 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>گنجینه جهانی</title>
-
+<title>گنجینه جهانی - World Treasure</title>
 <style>
-:root{
-  --bg:#080d1d;
-  --panel:rgba(18,29,56,.88);
-  --gold:#ffd166;
-  --gold2:#f4a261;
-  --blue:#203a72;
-  --text:#f8f9fa;
-  --muted:#a9b4cf;
-  --danger:#ef476f;
-  --green:#06d6a0;
-}
-*{box-sizing:border-box;font-family:Tahoma,Arial,sans-serif}
-body{
-  margin:0;background:radial-gradient(circle at top,#203a72,#080d1d 65%);
-  color:var(--text);min-height:100vh;overflow:hidden
-}
-#app{max-width:480px;height:100vh;margin:auto;position:relative;overflow:hidden}
-.top{
-  height:58px;display:flex;align-items:center;justify-content:space-between;
-  padding:10px 16px;background:rgba(0,0,0,.35);
-  border-bottom:1px solid rgba(255,209,102,.35);position:relative;z-index:5
-}
-.logo{font-weight:bold;color:var(--gold);font-size:17px}
-.badge{background:#7d1934;padding:7px 12px;border-radius:22px;font-size:14px}
-.lang{
-  background:transparent;color:white;border:1px solid var(--gold);
-  border-radius:14px;padding:4px 9px
-}
-.screen{
-  position:absolute;inset:58px 0 0;padding:20px;display:none;
-  overflow-y:auto;background:linear-gradient(180deg,rgba(8,13,29,.08),rgba(8,13,29,.5))
-}
+/* ============ استایل اصلی ============ */
+:root{--bg:#080d1d;--panel:rgba(18,29,56,.9);--gold:#ffd166;--text:#f8f9fa;--muted:#a9b4cf;--danger:#ef476f;--green:#06d6a0;--red:#c52035;--darkred:#4a0b15;--deepred:#17050a}
+*{box-sizing:border-box;font-family:Tahoma,sans-serif}
+body{margin:0;background:radial-gradient(circle at top,#203a72,#080d1d 70%);color:var(--text);height:100vh;overflow:hidden;transition:all 0.5s}
+#app{max-width:480px;height:100vh;margin:auto;position:relative;display:flex;flex-direction:column}
+header{height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 15px;background:rgba(0,0,0,.4);border-bottom:1px solid rgba(255,209,102,.3);z-index:10}
+.badge{background:#7d1934;padding:6px 12px;border-radius:20px;font-size:14px;font-weight:bold;display:flex;align-items:center;gap:5px}
+.screen{position:absolute;inset:60px 0 0;padding:20px;display:none;overflow-y:auto;z-index:5;background:var(--bg)}
 .screen.active{display:flex;flex-direction:column}
-.hero{text-align:center;margin:28px 0 20px}
-.hero .icon{font-size:68px;filter:drop-shadow(0 0 15px #ffd166)}
-h1{margin:5px 0;color:var(--gold);font-size:34px;text-shadow:0 0 18px #b7791f}
-.subtitle{color:var(--muted);font-size:13px}
-.panel,.card{
-  background:var(--panel);border:1px solid rgba(255,255,255,.1);
-  border-radius:18px;padding:16px;margin-bottom:13px;
-  box-shadow:0 8px 30px rgba(0,0,0,.2)
+.hero{text-align:center;margin:15px 0}
+h1{color:var(--gold);font-size:28px;text-shadow:0 0 15px rgba(255,209,102,.5);margin:5px 0}
+.panel,.card{background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:15px;padding:15px;margin-bottom:12px}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;text-align:center}
+.stat-val{display:block;color:var(--gold);font-size:18px;font-weight:bold;margin-top:5px}
+button{border:0;border-radius:12px;padding:14px;font-weight:bold;cursor:pointer;transition:0.2s;margin:5px 0}
+.btn-main{background:linear-gradient(135deg,#ffd166,#e08e20);color:#241400}
+.btn-weekly{background:linear-gradient(135deg,#06d6a0,#059669);color:#fff}
+.btn-locked{background:#334155;color:#94a3b8;cursor:not-allowed}
+.btn-sub{background:rgba(255,255,255,.1);color:white;border:1px solid rgba(255,209,102,0.4)}
+.row{display:flex;justify-content:space-between;align-items:center}
+#game-view{padding:0;background:#050916}
+canvas{width:100%;height:100%}
+.hud{position:absolute;top:15px;left:15px;right:15px;display:flex;justify-content:space-between;font-size:22px;text-shadow:2px 2px 4px #000;pointer-events:none}
+.wallet-box{background:#000;padding:12px;border-radius:10px;font-family:monospace;font-size:12px;word-break:break-all;color:var(--gold);text-align:center;margin:10px 0}
+.progress-bar{height:8px;background:#1e293b;border-radius:4px;margin:10px 0;overflow:hidden}
+.progress-fill{height:100%;background:var(--gold);width:0%;transition:0.5s}
+
+/* ============ استایل صفحه بازی (Canvas) ============ */
+#scr-game {
+  padding: 0 !important;
+  overflow: hidden;
+  background:
+    linear-gradient(
+      to bottom,
+      #071a3c 0%, /* Dark Sky Blue */
+      #123c68 42%, /* Medium Blue */
+      #7b542f 43%, /* Desert Ground */
+      #3a241c 100%  /* Darker Ground */
+    ) !important;
 }
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.stat{text-align:center;color:var(--muted);font-size:11px}
-.stat b{display:block;color:var(--gold);font-size:21px;margin-top:6px}
-button{
-  border:0;cursor:pointer;color:white;font-size:15px;font-weight:bold;
-  border-radius:13px;padding:13px;margin:6px 0
+#scr-game canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
 }
-.primary{
-  background:linear-gradient(135deg,#ffd166,#e08e20);color:#241400;
-  box-shadow:0 4px 0 #a85d0b
+.game-top-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 78% 15%, rgba(255,226,130,.35), transparent 8%), /* Moon glow */
+    radial-gradient(circle at 20% 25%, rgba(80,180,255,.15), transparent 20%); /* Ambient light */
+  z-index: 1;
 }
-.secondary{background:rgba(255,255,255,.08);border:1px solid rgba(255,209,102,.4)}
-.danger{background:var(--danger)}
-.back{margin-top:auto}
-.section-title{color:var(--gold);margin:5px 0 15px}
-.row{display:flex;justify-content:space-between;align-items:center;gap:10px}
-.card small{color:var(--muted)}
-.card button{padding:8px 13px;font-size:12px;background:var(--gold);color:#241400}
-.mission{display:flex;justify-content:space-between;padding:14px;border-radius:12px;background:rgba(255,255,255,.07);margin:8px 0}
-.done{opacity:.5;border:1px solid var(--green)}
-#game{padding:0;background:#050916}
-canvas{width:100%;height:100%;display:block}
-.hud{
- position:absolute;top:15px;left:14px;right:14px;z-index:3;
- display:flex;justify-content:space-between;font-size:20px;
- text-shadow:2px 2px 4px #000;pointer-events:none
+.game-title {
+  position: absolute;
+  top: 70px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: #ffe49a;
+  font-size: 13px;
+  text-shadow: 0 2px 5px #000;
+  z-index: 4;
+  pointer-events: none;
 }
-.hud span{color:var(--gold);font-weight:bold}
-.game-help{
- position:absolute;bottom:20px;left:0;right:0;text-align:center;
- color:#cbd5e1;font-size:12px;pointer-events:none
+.game-bottom-info {
+  position: absolute;
+  bottom: 18px;
+  left: 15px;
+  right: 15px;
+  padding: 9px 12px;
+  text-align: center;
+  color: #ffe9b0;
+  background: rgba(0,0,0,.3);
+  border: 1px solid rgba(255,209,102,.35);
+  border-radius: 12px;
+  font-size: 11px;
+  z-index: 4;
+  pointer-events: none;
 }
-.pay-address{
- direction:ltr;word-break:break-all;background:#050916;
- color:var(--gold);padding:12px;border-radius:10px;
- font-family:monospace;font-size:12px;text-align:center
+
+/* ============ استایل قوانین + مترجم ============ */
+#rules-overlay{
+  position:fixed; inset:0;z-index:999;background:linear-gradient(160deg,#0b1226,#1a0f2e 60%,#2a0e1a);
+  display:flex;align-items:center;justify-content:center;padding:16px;overflow-y:auto;
 }
-.notice{font-size:12px;color:var(--muted);line-height:1.8}
+#rules-box{
+  max-width:520px;width:100%;background:rgba(18,29,56,.95);border:1px solid rgba(255,209,102,.5);
+  border-radius:18px;padding:20px;max-height:92vh;overflow-y:auto;
+  box-shadow:0 0 40px rgba(255,209,102,.25);
+}
+#rules-box h2{color:var(--gold);text-align:center;margin:0 0 6px}
+.rules-income{
+  background:linear-gradient(135deg,rgba(255,209,102,.18),rgba(232,142,32,.25));
+  border:1px solid var(--gold);border-radius:12px;padding:12px;margin:12px 0;
+  text-align:center;color:var(--gold);font-weight:bold;font-size:15px;
+}
+.rule-item{background:rgba(255,255,255,.05);border-radius:10px;padding:10px 12px;margin:8px 0;font-size:13px;line-height:1.9}
+.rule-item b{color:var(--gold)}
+.rule-warn{background:rgba(239,71,111,.12);border:1px solid rgba(239,71,111,.5);border-radius:10px;padding:10px 12px;margin:8px 0;font-size:12.5px;color:#ffb3c1;line-height:1.8}
+#start-game-btn{width:100%;padding:16px;font-size:17px;margin-top:14px}
+.lang-row{display:flex;align-items:center;gap:8px;justify-content:center;margin:10px 0 4px}
+.lang-row select{
+  background:#0f1a33;color:var(--text);border:1px solid rgba(255,209,102,.4);
+  border-radius:10px;padding:8px 12px;font-size:14px;outline:none;width:100%;max-width:220px;
+}
+/* ============ استایل فاز نهایی مسابقه ============ */
+body.final-phase {
+  background: radial-gradient(circle at top, var(--red) 0%, var(--darkred) 46%, var(--deepred) 100%);
+}
+#scr-competition .competition-header {
+  background: #8d1326; /* Darker red header */
+  border-bottom: 1px solid #ffcc66;
+}
+.final-phase-banner {
+  background: var(--red);
+  color: #fff;
+  border: 1px solid #ffcc66;
+  text-align: center;
+  padding: 10px;
+  font-weight: bold;
+  font-size: 16px;
+  animation: pulse 1.5s infinite;
+}
+@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; }}
+body.final-phase .gold-pack-card { /* Styling for the golden pack in final phase */
+  display: block;
+  border: 2px solid #ffd166;
+  background: #5e151d; /* Darker background for final phase */
+  box-shadow: 0 0 18px rgba(255, 209, 102, .45);
+  animation: glow 1.5s infinite alternate;
+}
+@keyframes glow { from { box-shadow: 0 0 18px rgba(255, 209, 102, .45); } to { box-shadow: 0 0 30px rgba(255, 209, 102, .8); }}
+/* ============ استایل مخصوص پک تکمیلی (QR) ============ */
+.referral-promo {
+  background: linear-gradient(135deg, rgba(255, 209, 102, .18), rgba(232, 142, 32, .25));
+  border: 1px solid var(--gold);
+  border-radius: 12px;
+  padding: 12px;
+  margin: 12px 0;
+  text-align: center;
+  color: var(--gold);
+  font-weight: bold;
+  font-size: 15px;
+  animation: pulse 2s infinite;
+  cursor: pointer;
+}
+.referral-promo img {
+  max-width: 100px;
+  height: auto;
+  margin: 5px auto;
+  display: block;
+}
+.referral-promo button {
+  margin-top: 10px;
+  background: var(--gold);
+  color: #241400;
+  padding: 10px 20px;
+  border-radius: 8px;
+}
 </style>
 </head>
-
 <body>
 <div id="app">
+    <header>
+        <div style="font-weight:bold;color:var(--gold)">🏺 WORLD TREASURE</div>
+        <div class="badge">❤️ <span id="top-lives">5</span></div>
+    </header>
 
-<header class="top">
-  <div class="logo">🏺 WORLD TREASURE</div>
-  <button class="lang" onclick="toggleLanguage()">FA / EN</button>
-  <div class="badge">❤️ <span id="lives">5</span></div>
-</header>
+    <!-- RULES OVERLAY (First time only) -->
+    <div id="rules-overlay" style="display:none">
+      <div id="rules-box">
+        <h2>🏺 <span data-i18n="rulesTitle">قوانین بازی</span></h2>
+        <div class="lang-row">🌍 <select id="lang-select" onchange="applyLang(this.value)"></select></div>
 
-<!-- HOME -->
-<section id="home" class="screen active">
-  <div class="hero">
-    <div class="icon">🗺️💎</div>
-    <h1 data-fa="گنجینه جهانی" data-en="World Treasure">گنجینه جهانی</h1>
-    <div class="subtitle" data-fa="سفر به سرزمین‌های باستانی" data-en="A journey through ancient lands">
-      سفر به سرزمین‌های باستانی
+        <div class="rules-income">💰 <span data-i18n="rulesIncome">در مسابقات هفتگی جایزه واقعی ببرید!</span><br>
+          <span data-i18n="rulesIncomeSub">نفر اول ۴۵٪ | نفر دوم ۳۵٪ | نفر سوم ۲۰٪</span></div>
+
+        <div class="rule-item">📋 <span data-i18n="ruleStart">بازی با ۱۰ مأموریت رایگان و آسان شروع می‌شود.</span></div>
+        <div class="rule-item">🔑 <span data-i18n="ruleAccess">برای ماندن در کل بازی: ۳ تتر (پرداخت فقط Bitpin / TRC20).</span></div>
+        <div class="rule-item">🏆 <span data-i18n="ruleWeekly">مسابقه هفتگی اختیاری: جمعه ۲۳:۳۰ تا جمعه‌ی بعد ۲۳:۳۰، پرداخت تا ۲۴:۰۰.</span></div>
+        <div class="rule-item">🎯 <span data-i18n="ruleDifficulty">سختی یکی‌درمیان بیشتر می‌شود؛ روز آخر فوق‌سخت، فقط ماهرترین‌ها برنده‌اند.</span></div>
+        <div class="rule-item">❤️ <span data-i18n="ruleLives">هر ساعت ۱ جان (تا سقف ۵). پک جان: ۱۰ تا ۱۰۰ عدد.</span></div>
+        <div class="rule-item">🎭 <span data-i18n="ruleCharacter">بعد از ۱۵ مأموریت، شخصیت اختصاصی بسازید (۲ تتر).</span></div>
+        <div class="rule-item">⏳ <span data-i18n="ruleGolden">۵ ساعت پایانی: پک طلایی ۴۰۰ جان با ۵۰ تتر + نمایش جایزه‌ها.</span></div>
+
+        <div class="rule-warn">⚠️ <span data-i18n="rulePayWarn">فقط Bitpin و شبکه TRC20/ترون معتبر است. هر روش دیگر سوخت می‌شود و پذیرفته نیست.</span></div>
+
+        <button id="start-game-btn" class="btn-main" onclick="closeRules()">🚀 <span data-i18n="startGame">شروع بازی</span></button>
+      </div>
     </div>
-  </div>
 
-  <div class="panel stats">
-    <div class="stat">
-      <span data-fa="بهترین رکورد" data-en="Best Score">بهترین رکورد</span>
-      <b id="best">0</b>
-    </div>
-    <div class="stat">
-      <span data-fa="کل گنج‌ها" data-en="Treasures">کل گنج‌ها</span>
-      <b id="total">0</b>
-    </div>
-    <div class="stat">
-      <span data-fa="جان بعدی" data-en="Next Life">جان بعدی</span>
-      <b id="timer">کامل</b>
-    </div>
-  </div>
+    <!-- MENU SCREEN -->
+    <section id="scr-home" class="screen active">
+        <div class="hero">
+            <span style="font-size:40px">🏺</span>
+            <h1>گنجینه جهانی</h1>
+            <p id="status-text" style="color:var(--muted);font-size:13px">آماده برای کاوش؟</p>
+        </div>
+        
+        <div class="panel">
+            <div class="row"><small>مأموریت‌های آغازین</small><small id="progress-text">۰/۱۰</small></div>
+            <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
+        </div>
 
-  <button class="primary" onclick="startGame()" data-fa="🧭 شروع کاوش" data-en="🧭 Start Quest">
-    🧭 شروع کاوش
-  </button>
-  <button class="secondary" onclick="show('countries')" data-fa="🌍 کشورهای قابل کشف" data-en="🌍 Discover Countries">
-    🌍 کشورهای قابل کشف
-  </button>
-  <button class="secondary" onclick="show('missions')" data-fa="🏆 مأموریت‌ها" data-en="🏆 Missions">
-    🏆 مأموریت‌ها
-  </button>
-  <button class="secondary" onclick="show('shop')" data-fa="🛒 بازار گنجینه" data-en="🛒 Treasure Shop">
-    🛒 بازار گنجینه
-  </button>
-</section>
+        <div class="panel stats-grid">
+            <div><small>بهترین</small><b class="stat-val" id="best">0</b></div>
+            <div><small>کل گنج‌ها</small><b class="stat-val" id="total">0</b></div>
+            <div><small>شارژ جان</small><b class="stat-val" id="timer" style="font-size:12px">--:--</b></div>
+        </div>
+        
+        <!-- Play Button - shows based on access -->
+        <button id="btn-play" class="btn-main" onclick="startQuest()">🧭 شروع کاوش</button>
+        
+        <!-- Panel to buy access after 10 missions -->
+        <div id="buy-access-panel" style="display:none">
+            <button class="btn-weekly" onclick="goPay('3 USDT','دسترسی به کل بازی و ماندن')">🔑 خرید دسترسی کامل (۳ تتر)</button>
+        </div>
 
-<!-- COUNTRIES -->
-<section id="countries" class="screen">
-  <h2 class="section-title" data-fa="کشورهای قابل کشف" data-en="Discoverable Countries">
-    کشورهای قابل کشف
-  </h2>
+        <!-- Referral Promo -->
+        <div class="referral-promo" onclick="openScr('scr-referral')">
+            ✨ 50 جان رایگان! 5 دوست فعال دعوت کن ➔
+        </div>
 
-  <div class="card"><div class="row"><span>🇮🇷 ایران</span><b>🏺</b></div><small>تخت جمشید و گنج‌های هخامنشی</small></div>
-  <div class="card"><div class="row"><span>🇪🇬 مصر</span><b>🪙</b></div><small>اهرام و طلاهای فرعونی</small></div>
-  <div class="card"><div class="row"><span>🇬🇷 یونان</span><b>⚱️</b></div><small>آثار باستانی یونان</small></div>
-  <div class="card"><div class="row"><span>🇮🇳 هند</span><b>💎</b></div><small>جواهرات و الماس‌های سلطنتی</small></div>
-  <div class="card"><div class="row"><span>🇲🇽 مکزیک</span><b>🌞</b></div><small>تمدن مایا و گنج‌های خورشیدی</small></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <button class="btn-sub" onclick="openScr('scr-shop')">🛒 بازارچه</button>
+            <button class="btn-sub" onclick="openScr('scr-competition')">🏆 مسابقات</button>
+        </div>
+    </section>
 
-  <button class="secondary back" onclick="show('home')" data-fa="بازگشت" data-en="Back">بازگشت</button>
-</section>
+    <!-- SHOP SCREEN -->
+    <section id="scr-shop" class="screen">
+        <h2 style="color:var(--gold)">🛒 بازارچه گنجینه</h2>
+        
+        <div class="card row"><div>❤️ ۱۰ جان<br><small>۲ USDT</small></div><button class="btn-main" onclick="goPay('2 USDT','۱۰ عدد جان اضافی')">خرید</button></div>
+        <div class="card row"><div>❤️ ۲۰ جان<br><small>۳ USDT</small></div><button class="btn-main" onclick="goPay('3 USDT','۲۰ عدد جان اضافی')">خرید</button></div>
+        <div class="card row"><div>❤️ ۵۰ جان<br><small>۵ USDT</small></div><button class="btn-main" onclick="goPay('5 USDT','۵۰ عدد جان اضافی')">خرید</button></div>
+        <div class="card row"><div>❤️ ۱۰۰ جان<br><small>۱۰ USDT</small></div><button class="btn-main" onclick="goPay('10 USDT','۱۰۰ عدد جان اضافی')">خرید</button></div>
+        <div class="card row"><div>🚀 پک ۴۸ ساعته نامحدود<br><small>۵۰ USDT</small></div><button class="btn-main" onclick="goPay('50 USDT','۴۸ ساعت بازی نامحدود + جان')">خرید</button></div>
+        <div class="card row"><div>🤝 کمک به توسعه بازی<br><small>۳ USDT</small></div><button class="btn-main" onclick="goPay('3 USDT','حمایت و کمک مالی')">کمک</button></div>
+        
+        <!-- Character Creation (unlocks after 15 missions) -->
+        <div id="char-section">
+            <div class="card row">
+                <div>
+                    🎭 <span id="char-title">ساخت شخصیت جدید</span><br>
+                    <small id="char-lock-txt">نیاز به ۱۵ مأموریت (فعلی: ۰)</small>
+                </div>
+                <button id="btn-char-buy" class="btn-locked" disabled>۲ USDT</button>
+            </div>
+        </div>
 
-<!-- MISSIONS -->
-<section id="missions" class="screen">
-  <h2 class="section-title" data-fa="مأموریت‌های اکتشاف" data-en="Exploration Missions">
-    مأموریت‌های اکتشاف
-  </h2>
-  <div id="missionList"></div>
-  <button class="secondary back" onclick="show('home')" data-fa="بازگشت" data-en="Back">بازگشت</button>
-</section>
+        <!-- Gold Pack (5 hours left) -->
+        <div id="gold-pack-card" class="gold-pack-card" style="display:none">
+            <div class="gold-pack-badge">🔥 ویژه ۵ ساعت پایانی</div>
+            <h3>👑 پک طلایی ۴۰۰ جان</h3>
+            <p>قوی‌ترین پک هفته برای جهش به رتبه‌های برتر</p>
+            <p><b>۴۰۰ جان</b> فقط <b>۵۰ تتر</b></p>
+            <button onclick="goPay('50 USDT', 'پک طلایی ۴۰۰ جان')">همین الان بخر!</button>
+        </div>
 
-<!-- SHOP -->
-<section id="shop" class="screen">
-  <h2 class="section-title" data-fa="بازار گنجینه" data-en="Treasure Shop">بازار گنجینه</h2>
+        <button class="btn-sub" onclick="openScr('scr-home')">بازگشت</button>
+    </section>
+    
+    <!-- REFERRAL SCREEN -->
+    <section id="scr-referral" class="screen">
+        <div class="hero"><span style="font-size:40px">🤝</span><h1>دوستانت را دعوت کن</h1></div>
+        <div class="panel">
+            <p>هر دوست فعالی که دعوت کنی، بهت ۵۰ جان جایزه می‌ده!</p>
+            <div class="wallet-box" id="my-ref-code">INVITE_ABCDEFG</div>
+            <small>(فقط برای تست. در نسخه نهایی، این کد و لینک از سرور می‌آید)</small>
+            <button class="btn-sub" onclick="copyRefCode()" style="width:100%">کپی کد دعوت</button>
+        </div>
+         <button class="btn-sub" onclick="openScr('scr-home')">بازگشت</button>
+    </section>
 
-  <div class="card row">
-    <div>❤️ ۲۰ جان<br><small>۲ USDT - TRC20</small></div>
-    <button onclick="payment('2 USDT','۲۰ جان')">خرید</button>
-  </div>
-  <div class="card row">
-    <div>❤️ ۴۰ جان<br><small>۳ USDT - TRC20</small></div>
-    <button onclick="payment('3 USDT','۴۰ جان')">خرید</button>
-  </div>
-  <div class="card row">
-    <div>❤️ ۵۰ جان<br><small>۴ USDT - TRC20</small></div>
-    <button onclick="payment('4 USDT','۵۰ جان')">خرید</button>
-  </div>
-  <div class="card row">
-    <div>❤️ ۱۰۰ جان<br><small>۱۰ USDT - TRC20</small></div>
-    <button onclick="payment('10 USDT','۱۰۰ جان')">خرید</button>
-  </div>
-  <div class="card row">
-    <div>🎭 شخصیت اختصاصی<br><small>۲ USDT</small></div>
-    <button onclick="payment('2 USDT','شخصیت اختصاصی')">خرید</button>
-  </div>
+    <!-- PAYMENT SCREEN -->
+    <section id="scr-pay" class="screen">
+        <h2>💳 پرداخت امن (Bitpin - TRC20)</h2>
+        <div class="panel">
+            <p>آیتم: <b id="pay-item"></b></p>
+            <p>مبلغ: <b id="pay-amt"></b></p>
+            <small style="color:var(--muted)">آدرس کیف پول ترون (TRC20) Bitpin:</small>
+            <div class="wallet-box" id="payment-address">TUWa99kY7KUYJbh1GWdJWa6n597yDkM8Aq</div>
+            <button class="btn-sub" style="width:100%" onclick="copyPaymentAddress()">📋 کپی آدرس</button>
+        </div>
+        <button class="btn-main" onclick="sendTele()">✅ تأیید و ارسال به تلگرام</button>
+        <button class="btn-sub" onclick="openScr('scr-home')">انصراف</button>
+    </section>
 
-  <p class="notice">
-    پرداخت‌ها فقط از طریق Bitpin و شبکه Tron/TRC20 انجام می‌شوند.
-    پس از پرداخت، شناسه تراکنش را برای بررسی ارسال کنید.
-  </p>
+    <!-- COMPETITION SCREEN -->
+    <section id="scr-competition" class="screen">
+        <header class="competition-header">
+             <div class="hud">
+                 <div style="color:var(--gold)">🏆 مسابقه هفتگی</div>
+                 <div style="color:var(--danger)">❤️ <span id="comp-lives">5</span></div>
+             </div>
+        </header>
+        <div id="final-phase-banner" class="final-phase-banner" hidden>
+            ⏳ ۵ ساعت پایانی! رتبه‌ها در حال تغییرند!
+        </div>
+        <div class="panel">
+            <div class="row">
+                <small>شرکت‌کنندگان واقعی:</small>
+                <small id="competitor-count">۱۲۴ نفر</small> <!-- Should be dynamic -->
+            </div>
+             <div class="row">
+                <small>زمان باقی‌مانده:</small>
+                <small id="competition-timer">--:--:--</small>
+            </div>
+        </div>
+        
+        <!-- Prize section - only visible in final phase -->
+        <div id="prize-values" class="panel" style="display:none">
+            <p style="text-align:center;color:var(--gold);font-weight:bold;">جوایز ویژه ۵ ساعت پایانی:</p>
+            <div class="row" style="text-align:center; font-size:13px;">
+                <div style="flex:1;">🥇 نفر اول<br><b id="prize-1st">۴۵٪</b></div>
+                <div style="flex:1;">🥈 نفر دوم<br><b id="prize-2nd">۳۵٪</b></div>
+                <div style="flex:1;">🥉 نفر سوم<br><b id="prize-3rd">۲۰٪</b></div>
+            </div>
+        </div>
+        
+        <div class="panel stats-grid">
+            <div><small>بهترین</small><b class="stat-val" id="comp-best">0</b></div>
+            <div><small>کل گنج‌ها</small><b class="stat-val" id="comp-total">0</b></div>
+            <div><small>شارژ جان</small><b class="stat-val" id="comp-timer" style="font-size:12px">--:--</b></div>
+        </div>
 
-  <button class="secondary back" onclick="show('home')" data-fa="بازگشت" data-en="Back">بازگشت</button>
-</section>
+        <button id="btn-comp-play" class="btn-main" onclick="startQuest()">🎮 شروع بازی</button>
+        <button id="btn-comp-locked" class="btn-locked" disabled>🔒 مسابقه در حال اجراست</button>
+        
+        <button class="btn-sub" onclick="openScr('scr-shop')">🛒 بازار</button>
+    </section>
 
-<!-- PAYMENT -->
-<section id="payment" class="screen">
-  <h2 class="section-title">💳 پرداخت Bitpin</h2>
-
-  <div class="panel">
-    <p>مبلغ: <b id="payAmount"></b></p>
-    <p>بابت: <b id="payItem"></b></p>
-    <p class="notice">مبلغ را دقیقاً با شبکه TRC20 ارسال کنید:</p>
-    <div class="pay-address" id="wallet"></div>
-    <button class="secondary" onclick="copyWallet()">📋 کپی آدرس</button>
-  </div>
-
-  <button class="primary" onclick="sendTelegram()">✅ ارسال درخواست در تلگرام</button>
-  <button class="secondary" onclick="show('shop')">انصراف</button>
-</section>
-
-<!-- GAME -->
-<section id="game" class="screen">
-  <div class="hud">
-    <div>💎 <span id="score">0</span></div>
-    <div>❤️ <span id="gameLives">5</span></div>
-  </div>
-  <canvas id="canvas"></canvas>
-  <div class="game-help">برای حرکت، انگشت خود را روی صفحه به چپ و راست بکشید</div>
-</section>
-
+    <!-- GAME SCREEN -->
+    <section id="scr-game" class="screen" style="padding:0">
+        <div class="game-top-glow"></div>
+        <div class="hud">
+            <div>💎 <span id="score">0</span></div>
+            <div style="color:#ff7890">❤️ <span id="game-lives">5</span></div>
+        </div>
+        <div class="game-title">
+            🏺 سرزمین گنجینه‌های فراموش‌شده
+        </div>
+        <canvas id="canvas"></canvas>
+        <div class="game-bottom-info">
+            💰 گنج‌ها را جمع کن و از تله‌های باستانی دوری کن
+        </div>
+    </section>
 </div>
 
 <script>
-/* ================= تنظیمات اصلی ================= */
-
-// آدرس واقعی ولت خودت را فقط در همین خط وارد کن.
-// این آدرس نمونه است و برای پرداخت واقعی استفاده نکن.
-const WALLET_ADDRESS = "YOUR_TRC20_WALLET_ADDRESS";
-
-// نام کاربری بات تلگرام بدون @
-const TELEGRAM_BOT = "starhunt_play_bot";
-
-/* ================= داده بازی ================= */
-
-let lang = localStorage.getItem("wt_lang") || "fa";
-
-let data = {
-  lives: Number(localStorage.getItem("wt_lives") ?? 5),
-  best: Number(localStorage.getItem("wt_best") ?? 0),
-  total: Number(localStorage.getItem("wt_total") ?? 0),
-  games: Number(localStorage.getItem("wt_games") ?? 0),
-  lastLife: Number(localStorage.getItem("wt_lastLife") ?? Date.now())
+// ============ STATE MANAGEMENT ============
+let state = {
+    lives: parseInt(localStorage.getItem('wt_lives')) || 5,
+    best: parseInt(localStorage.getItem('wt_best')) || 0,
+    total: parseInt(localStorage.getItem('wt_total')) || 0,
+    missionsDone: parseInt(localStorage.getItem('wt_miss_count')) || 0,
+    hasAccess: localStorage.getItem('wt_has_access') === 'true',
+    hasCustomChar: localStorage.getItem('wt_has_char') === 'true',
+    lastRegen: parseInt(localStorage.getItem('wt_last')) || Date.now(),
+    // Competition state - requires backend for real values
+    competitionEndTime: parseInt(localStorage.getItem('wt_comp_end')) || Date.now() + (7 * 24 * 60 * 60 * 1000), // Default 7 days from now
+    competitionEntryFee: 3,
+    competitionPrizePool: 100, // Example, should be dynamic
+    topPlayers: [], // Should be fetched from backend
+    competitorCount: 124, // Should be dynamic
+    isFinalPhase: false,
+    // Game difficulty settings
+    difficulty: { spawnRate: 0.04, obstacleSpeed: 4, itemSpeed: 3, maxObstacles: 6, maxItems: 7, missionScoreTarget: 10 },
+    missionDay: 1 // Current mission day (1-7) - For real implementation, this would be dynamic based on competition start
 };
 
-const missions = [
-  ["جمع‌آوری ۱۰ گنج","Collect 10 treasures",10],
-  ["جمع‌آوری ۵۰ گنج","Collect 50 treasures",50],
-  ["جمع‌آوری ۱۰۰ گنج","Collect 100 treasures",100],
-  ["رسیدن به امتیاز ۲۰","Reach score 20",20],
-  ["انجام ۵ کاوش","Complete 5 quests",5]
-];
-
+// Save state to localStorage
 function save(){
-  localStorage.setItem("wt_lives",data.lives);
-  localStorage.setItem("wt_best",data.best);
-  localStorage.setItem("wt_total",data.total);
-  localStorage.setItem("wt_games",data.games);
-  localStorage.setItem("wt_lastLife",data.lastLife);
-  update();
+    localStorage.setItem('wt_lives', state.lives);
+    localStorage.setItem('wt_best', state.best);
+    localStorage.setItem('wt_total', state.total);
+    localStorage.setItem('wt_miss_count', state.missionsDone);
+    localStorage.setItem('wt_has_access', state.hasAccess);
+    localStorage.setItem('wt_has_char', state.hasCustomChar);
+    localStorage.setItem('wt_last', state.lastRegen);
+    localStorage.setItem('wt_comp_end', state.competitionEndTime);
+    syncUI();
 }
 
-function update(){
-  document.getElementById("lives").textContent=data.lives;
-  document.getElementById("gameLives").textContent=data.lives;
-  document.getElementById("best").textContent=data.best;
-  document.getElementById("total").textContent=data.total;
-  renderMissions();
-  document.querySelectorAll("[data-fa]").forEach(el=>{
-    el.textContent=el.getAttribute("data-"+lang);
-  });
-  document.documentElement.dir=lang==="fa"?"rtl":"ltr";
-}
+// Update UI elements based on state
+function syncUI(){
+    document.getElementById('top-lives').innerText = state.lives;
+    document.getElementById('game-lives').innerText = state.lives;
+    document.getElementById('best').innerText = state.best;
+    document.getElementById('total').innerText = state.total;
+    
+    // Mission Progress
+    let p = Math.min(10, state.missionsDone);
+    document.getElementById('progress-text').innerText = p + "/۱۰";
+    document.getElementById('progress-fill').style.width = (p*10) + "%";
 
-function toggleLanguage(){
-  lang=lang==="fa"?"en":"fa";
-  localStorage.setItem("wt_lang",lang);
-  update();
-}
-
-function show(id){
-  document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-}
-
-function renderMissions(){
-  const box=document.getElementById("missionList");
-  if(!box)return;
-  box.innerHTML="";
-  missions.forEach((m,i)=>{
-    let value=i<3?data.total:i===3?data.best:data.games;
-    let done=value>=m[2];
-    box.innerHTML+=`
-      <div class="mission ${done?"done":""}">
-        <span>${lang==="fa"?m[0]:m[1]}</span>
-        <b>${done?"✅":"🔒"}</b>
-      </div>`;
-  });
-}
-
-/* ================= شارژ جان ================= */
-
-setInterval(()=>{
-  if(data.lives<5){
-    const hour=3600000;
-    const passed=Date.now()-data.lastLife;
-    if(passed>=hour){
-      data.lives=Math.min(5,data.lives+Math.floor(passed/hour));
-      data.lastLife=Date.now();
-      save();
+    // Update Play Button and Status Text
+    if(state.missionsDone >= 10 && !state.hasAccess) {
+        document.getElementById('buy-access-panel').style.display = 'block';
+        document.getElementById('btn-play').style.display = 'none';
+        document.getElementById('status-text').innerText = "دسترسی آزمایشی تمام شد. برای ادامه کلیک کنید.";
+    } else {
+        document.getElementById('buy-access-panel').style.display = 'none';
+        document.getElementById('btn-play').style.display = 'block';
+        document.getElementById('status-text').innerText = state.hasAccess ? "دسترسی کامل فعال است 🟢" : "۱۰ مأموریت رایگان آغازین";
     }
-    const remaining=hour-(passed%hour);
-    const min=Math.floor(remaining/60000);
-    const sec=Math.floor(remaining/1000)%60;
-    document.getElementById("timer").textContent=
-      String(min).padStart(2,"0")+":"+String(sec).padStart(2,"0");
-  }else{
-    document.getElementById("timer").textContent=lang==="fa"?"کامل":"FULL";
-  }
-},1000);
 
-/* ================= موتور بازی ================= */
-
-const canvas=document.getElementById("canvas");
-const ctx=canvas.getContext("2d");
-
-let playing=false,score=0,raf;
-let player={x:0,y:0,size:25};
-let treasures=[],traps=[];
-let lastSpawn=0;
-
-function resize(){
-  canvas.width=canvas.parentElement.clientWidth;
-  canvas.height=canvas.parentElement.clientHeight;
-  player.y=canvas.height-90;
-  if(!player.x)player.x=canvas.width/2;
+    // Character Section Logic
+    const charBtn = document.getElementById('btn-char-buy');
+    const charTxt = document.getElementById('char-lock-txt');
+    const charTitle = document.getElementById('char-title');
+    if (state.missionsDone >= 15) {
+        charTxt.innerText = state.hasCustomChar ? "جابجایی / ارتقای شخصیت (۲ تتر)" : "ساخت شخصیت جدید (۲ تتر)";
+        charTitle.innerText = state.hasCustomChar ? "شخصیت من" : "ساخت شخصیت جدید";
+        charBtn.className = "btn-main";
+        charBtn.disabled = false;
+        charBtn.onclick = function() {
+            goPay('2 USDT', state.hasCustomChar ? 'جابجایی / ارتقای شخصیت' : 'ساخت شخصیت اختصاصی');
+        };
+    } else {
+        charTxt.innerText = `نیاز به ۱۵ مأموریت (فعلی: ${state.missionsDone})`;
+        charBtn.className = "btn-locked";
+        charBtn.disabled = true;
+    }
+    
+    // Update competition UI if visible
+    if(document.getElementById('scr-competition').classList.contains('active')) {
+        updateCompetitionUI();
+    }
 }
 
-function startGame(){
-  if(data.lives<=0){
-    alert(lang==="fa"?"جان کافی ندارید!":"No lives available!");
-    return;
-  }
-
-  data.lives--;
-  data.games++;
-  save();
-  show("game");
-  resize();
-
-  score=0;
-  treasures=[];
-  traps=[];
-  player.x=canvas.width/2;
-  playing=true;
-  document.getElementById("score").textContent=0;
-  cancelAnimationFrame(raf);
-  loop();
+// Navigate between screens
+function openScr(id){
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    // If switching to competition screen, start its timer update
+    if(id === 'scr-competition') {
+        updateCompetitionUI(); // Initial call
+        setInterval(updateCompetitionUI, 1000); // Update every second
+    }
 }
 
-function createTreasure(){
-  treasures.push({
-    x:20+Math.random()*(canvas.width-40),
-    y:-35,
-    speed:2.5+Math.random()*2,
-    icon:["💰","💎","🏺","🪙"][Math.floor(Math.random()*4)]
+// Timer for regenerating lives (1 per hour, max 5)
+setInterval(() => {
+    if(state.lives < 5){
+        let now = Date.now(), diff = now - state.lastRegen, wait = 3600000; // 1 hour
+        if(diff >= wait){
+            state.lives = Math.min(5, state.lives + 1);
+            state.lastRegen = Date.now();
+            save();
+        }
+        let rem = wait - (diff % wait), m = Math.floor(rem/60000), s = Math.floor((rem%60000)/1000);
+        document.getElementById('timer').innerText = `${m}:${s<10?'0':''}${s}`;
+        if(document.getElementById('comp-timer')) document.getElementById('comp-timer').innerText = `${m}:${s<10?'0':''}${s}`;
+    } else {
+        document.getElementById('timer').innerText = "FULL (5)";
+        if(document.getElementById('comp-timer')) document.getElementById('comp-timer').innerText = "FULL (5)";
+    }
+}, 1000);
+
+// ============ GAME LOGIC ============
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+let playing = false, score = 0, player = {x:0, y:0}, items = [], obstacles = [];
+
+// Game difficulty settings (adjust based on mission day / phase)
+const DIFFICULTIES = {
+    // Default (easy missions / start)
+    easy: { spawnRate: 0.04, obstacleSpeed: 4, itemSpeed: 3, maxObstacles: 6, maxItems: 7, missionScoreTarget: 10 },
+    // Medium (alternating harder days)
+    medium: { spawnRate: 0.05, obstacleSpeed: 6, itemSpeed: 4, maxObstacles: 9, maxItems: 5 },
+    // Hard (final day)
+    hard: { spawnRate: 0.08, obstacleSpeed: 8, itemSpeed: 4, maxObstacles: 12, maxItems: 4, missionScoreTarget: 15 },
+    // Special for 48h unlimited mode (if needed)
+    unlimited: { spawnRate: 0.05, obstacleSpeed: 5, itemSpeed: 3, maxObstacles: 8, maxItems: 6, missionScoreTarget: 20 }
+};
+
+function setDifficulty(mode = 'easy') {
+    const diff = DIFFICULTIES[mode];
+    state.difficulty = { ...diff }; // Apply difficulty settings
+    state.difficulty.missionScoreTarget = state.hasAccess ? (mode === 'hard' ? 15 : 10) : 10; // Adjust target based on access/mode
+}
+
+function startQuest(){
+    if(state.lives <= 0){ alert("جان ندارید! منتظر شارژ تایمر بمانید یا جان تهیه کنید."); return; }
+    state.lives--; save();
+    openScr('scr-game');
+    canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight;
+    player = {x: canvas.width/2, y: canvas.height-100};
+    items = []; obstacles = []; score = 0; playing = true;
+    
+    // Set difficulty based on mission day / competition phase
+    const now = new Date();
+    const dayOfWeek = now.getDay(); // 0 = Sunday, 6 = Saturday
+    const isFinalDay = dayOfWeek === 5 && (now.getHours() >= 19 || (now.getHours() === 18 && now.getMinutes() >= 30)); // Friday evening
+    const isFinalPhaseCompetition = state.isFinalPhase; // From competition timer update
+
+    if(isFinalPhaseCompetition) {
+        setDifficulty('hard');
+    } else if (dayOfWeek === 5 && state.missionsDone >= 10) { // Friday, but not final hour, and has access
+        setDifficulty('medium'); // Friday difficulty
+    } else if (state.missionsDone >= 10 && state.hasAccess) { // Has access, not Friday
+        setDifficulty('medium');
+    } else {
+        setDifficulty('easy');
+    }
+
+    loop();
+}
+
+// Function to draw the game background elements
+function drawGameBackground() {
+  const w = canvas.width;
+  const h = canvas.height;
+
+  // Sky gradient
+  const sky = ctx.createLinearGradient(0, 0, 0, h * .62);
+  sky.addColorStop(0, "#06132e"); // Darkest night sky
+  sky.addColorStop(.55, "#123c68"); // Medium blue sky
+  sky.addColorStop(1, "#6f4a31"); // Transition to ground color
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, w, h);
+
+  // Moon
+  ctx.beginPath();
+  ctx.arc(w * .78, h * .14, 32, 0, Math.PI * 2);
+  ctx.fillStyle = "#ffe8a3"; // Light yellow moon
+  ctx.shadowColor = "rgba(255,232,163,.8)";
+  ctx.shadowBlur = 25;
+  ctx.fill();
+  ctx.shadowBlur = 0; // Reset shadow
+
+  // Stars
+  const stars = [
+    [.12,.12],[.23,.20],[.36,.10],[.48,.18],
+    [.61,.08],[.88,.26],[.70,.30],[.08,.34],
+    [.92,.12],[.44,.30]
+  ];
+  stars.forEach(([x,y], index) => {
+    ctx.beginPath();
+    ctx.arc(w*x, h*y, index % 3 === 0 ? 2 : 1, 0, Math.PI*2); // Vary star size
+    ctx.fillStyle = "#fff4bd"; // Pale yellow stars
+    ctx.fill();
   });
-}
 
-function createTrap(){
-  traps.push({
-    x:20+Math.random()*(canvas.width-40),
-    y:-35,
-    speed:3.5+Math.random()*2,
-    icon:["🪨","🕳️","💣"][Math.floor(Math.random()*3)]
-  });
-}
+  // Distant mountains
+  ctx.fillStyle = "#172d45"; // Dark blue-grey for mountains
+  ctx.beginPath();
+  ctx.moveTo(0, h*.52);
+  ctx.lineTo(w*.16, h*.32);
+  ctx.lineTo(w*.31, h*.51);
+  ctx.lineTo(w*.48, h*.28);
+  ctx.lineTo(w*.68, h*.50);
+  ctx.lineTo(w*.84, h*.34);
+  ctx.lineTo(w, h*.51);
+  ctx.lineTo(w, h*.67); // Base of mountains
+  ctx.lineTo(0, h*.67);
+  ctx.closePath();
+  ctx.fill();
 
-function drawBackground(){
-  ctx.fillStyle="#050916";
-  ctx.fillRect(0,0,canvas.width,canvas.height);
+  // Desert ground
+  ctx.fillStyle = "#493021"; // Earthy brown
+  ctx.fillRect(0, h*.55, w, h*.45);
 
-  for(let i=0;i<45;i++){
-    let x=(i*83)%canvas.width;
-    let y=(i*137+Date.now()/35)%canvas.height;
-    ctx.fillStyle="rgba(255,209,102,.35)";
-    ctx.fillRect(x,y,2,2);
+  // Main path
+  ctx.fillStyle = "#82603a"; // Path color
+  ctx.beginPath();
+  ctx.moveTo(w*.28, h);
+  ctx.quadraticCurveTo(w*.45, h*.72, w*.50, h*.54); // Curve to vanishing point
+  ctx.quadraticCurveTo(w*.57, h*.72, w*.78, h);
+  ctx.closePath();
+  ctx.fill();
+
+  // Path dividing lines
+  ctx.strokeStyle = "rgba(255,209,102,.18)"; // Faint gold lines
+  ctx.lineWidth = 2;
+  for(let i = 0; i < 7; i++) {
+    const y = h*.62 + i*55;
+    ctx.beginPath();
+    ctx.moveTo(w*.25 - i*8, y); // Lines get narrower towards vanishing point
+    ctx.lineTo(w*.77 + i*8, y);
+    ctx.stroke();
   }
 
-  ctx.fillStyle="rgba(255,209,102,.08)";
-  ctx.fillRect(0,canvas.height-130,canvas.width,130);
+  // Ancient columns
+  drawColumn(w*.10, h*.43); // Left column base position
+  drawColumn(w*.88, h*.40); // Right column base position
+
+  // Torches
+  drawTorch(w*.18, h*.57); // Left torch base position
+  drawTorch(w*.82, h*.57); // Right torch base position
+
+  // Ancient inscription above path
+  ctx.fillStyle = "#b88945";
+  ctx.fillRect(w*.33, h*.47, w*.34, 12);
+  ctx.fillStyle = "#e7bd68";
+  ctx.fillRect(w*.36, h*.44, w*.28, 7);
 }
 
-function collision(a,b){
-  return Math.hypot(a.x-b.x,a.y-b.y)<35;
+// Helper to draw a column
+function drawColumn(x, y) {
+  ctx.fillStyle = "#b78a50"; // Column shaft color
+  ctx.fillRect(x - 10, y, 20, 95); // Main shaft
+
+  ctx.fillStyle = "#d0a765"; // Cap and base color
+  ctx.fillRect(x - 22, y - 8, 44, 12); // Top cap
+  ctx.fillRect(x - 25, y + 88, 50, 12); // Bottom base
+
+  ctx.fillStyle = "rgba(40,20,10,.35)"; // Shadow/depth effect
+  ctx.fillRect(x - 4, y + 8, 5, 75);
 }
 
+// Helper to draw a torch
+function drawTorch(x, y) {
+  ctx.fillStyle = "#5a321d"; // Torch stand color
+  ctx.fillRect(x - 4, y, 8, 42);
+
+  // Fire effect - outer glow
+  ctx.beginPath();
+  ctx.arc(x, y - 4, 15, 0, Math.PI * 2);
+  ctx.fillStyle = "rgba(255,157,35,.12)";
+  ctx.shadowColor = "#ff9d23";
+  ctx.shadowBlur = 18;
+  ctx.fill();
+  ctx.shadowBlur = 0; // Reset shadow
+
+  // Fire effect - inner flame
+  ctx.beginPath();
+  ctx.arc(x, y - 8, 8, 0, Math.PI * 2);
+  ctx.fillStyle = "#ff9d23";
+  ctx.shadowColor = "#ff9d23";
+  ctx.shadowBlur = 18;
+  ctx.fill();
+  ctx.shadowBlur = 0; // Reset shadow
+}
+
+// Main game loop
 function loop(){
-  if(!playing)return;
+  if(!playing) return;
 
-  drawBackground();
-  const now=Date.now();
+  drawGameBackground(); // Draw the scene first
 
-  if(now-lastSpawn>500){
-    if(Math.random()<.65)createTreasure();
-    if(Math.random()<.3)createTrap();
-    lastSpawn=now;
-  }
-
-  // شخصیت کاوشگر
-  ctx.font="42px serif";
-  ctx.textAlign="center";
-  ctx.fillText("🤠",player.x,player.y+15);
-
-  treasures.forEach((t,i)=>{
-    t.y+=t.speed;
-    ctx.font="30px serif";
-    ctx.fillText(t.icon,t.x,t.y);
-
-    if(collision({x:player.x,y:player.y},t)){
-      score++;
-      data.total++;
-      treasures.splice(i,1);
-      document.getElementById("score").textContent=score;
-      save();
-    }else if(t.y>canvas.height+40)treasures.splice(i,1);
-  });
-
-  traps.forEach((t,i)=>{
-    t.y+=t.speed;
-    ctx.font="31px serif";
-    ctx.fillText(t.icon,t.x,t.y);
-
-    if(collision({x:player.x,y:player.y},t)){
-      endGame();
-    }else if(t.y>canvas.height+40)traps.splice(i,1);
-  });
-
-  raf=requestAnimationFrame(loop);
-}
-
-function endGame(){
-  if(!playing)return;
-  playing=false;
-  cancelAnimationFrame(raf);
-
-  data.best=Math.max(data.best,score);
-  save();
-
-  setTimeout(()=>{
-    alert((lang==="fa"?"پایان کاوش! امتیاز شما: ":"Quest over! Score: ")+score);
-    show("home");
-  },100);
-}
-
-canvas.addEventListener("touchmove",e=>{
-  e.preventDefault();
-  const rect=canvas.getBoundingClientRect();
-  player.x=e.touches[0].clientX-rect.left;
-  player.x=Math.max(25,Math.min(canvas.width-25,player.x));
-},{passive:false});
-
-canvas.addEventListener("mousemove",e=>{
-  if(e.buttons){
-    const rect=canvas.getBoundingClientRect();
-    player.x=e.clientX-rect.left;
-  }
-});
-
-window.addEventListener("resize",resize);
-
-/* ================= پرداخت ================= */
-
-let currentPayment={amount:"",item:""};
-
-function payment(amount,item){
-  currentPayment={amount,item};
-  document.getElementById("payAmount").textContent=amount;
-  document.getElementById("payItem").textContent=item;
-  document.getElementById("wallet").textContent=WALLET_ADDRESS;
-  show("payment");
-}
-
-function copyWallet(){
-  navigator.clipboard.writeText(WALLET_ADDRESS)
-    .then(()=>alert("آدرس کپی شد"))
-    .catch(()=>alert("کپی خودکار انجام نشد؛ آدرس را دستی کپی کنید."));
-}
-
-function sendTelegram(){
-  const text=
-    `سلام، درخواست خرید دارم.\n`+
-    `محصول: ${currentPayment.item}\n`+
-    `مبلغ: ${currentPayment.amount}\n`+
-    `شبکه: TRC20 / Tron\n`+
-    `لطفاً شناسه تراکنش را ارسال می‌کنم.`;
-
-  window.open(
-    "https://t.me/"+TELEGRAM_BOT+"?text="+encodeURIComponent(text),
-    "_blank"
-  );
-}
-
-update();
-</script>
-</body>
-</html>
+  ctx.font = "40px Arial";
+  ctx.textAlign = "center";
+  
+  // Player Avatar (custom character if available)
+  let avatar = state.hasCustomChar ? "👑" : "🤠";
+  ctx.fillText(avatar, player.x, player.y + 15);
+  
+  // Item and Obstacle Spawning
+  if(Math.random() < state.difficulty.spawnRate) items.push({x: Math.random()*(canvas.width-40)+20, y:-40, icon: ["💰","💎","🏺"][Math.floor(Math.random()*3)]});
+  if(Math.random() < state.difficulty.spawnRate / 1.5 && obstacles.length < state.difficulty.maxObstacles) obstacles.push({x: Math.random()*(canvas.width-40)+20, y:-40});
+  
+  // Item Collision and Collection
+  items.forEach((it, i) => {
+    it.y += state.difficulty.itemSpeed;
+    ctx.fillText(it.icon, it.x, it.y);
+    if(Math.hypot(it.x-player.x, it.y-player.y) < 40){ // Collision detection
+      score++; state.total++; items.splice(i,1);
