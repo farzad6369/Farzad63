@@ -1,1 +1,508 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>گنجینه جهانی</title>
 
+<style>
+:root{
+  --bg:#080d1d;
+  --panel:rgba(18,29,56,.88);
+  --gold:#ffd166;
+  --gold2:#f4a261;
+  --blue:#203a72;
+  --text:#f8f9fa;
+  --muted:#a9b4cf;
+  --danger:#ef476f;
+  --green:#06d6a0;
+}
+*{box-sizing:border-box;font-family:Tahoma,Arial,sans-serif}
+body{
+  margin:0;background:radial-gradient(circle at top,#203a72,#080d1d 65%);
+  color:var(--text);min-height:100vh;overflow:hidden
+}
+#app{max-width:480px;height:100vh;margin:auto;position:relative;overflow:hidden}
+.top{
+  height:58px;display:flex;align-items:center;justify-content:space-between;
+  padding:10px 16px;background:rgba(0,0,0,.35);
+  border-bottom:1px solid rgba(255,209,102,.35);position:relative;z-index:5
+}
+.logo{font-weight:bold;color:var(--gold);font-size:17px}
+.badge{background:#7d1934;padding:7px 12px;border-radius:22px;font-size:14px}
+.lang{
+  background:transparent;color:white;border:1px solid var(--gold);
+  border-radius:14px;padding:4px 9px
+}
+.screen{
+  position:absolute;inset:58px 0 0;padding:20px;display:none;
+  overflow-y:auto;background:linear-gradient(180deg,rgba(8,13,29,.08),rgba(8,13,29,.5))
+}
+.screen.active{display:flex;flex-direction:column}
+.hero{text-align:center;margin:28px 0 20px}
+.hero .icon{font-size:68px;filter:drop-shadow(0 0 15px #ffd166)}
+h1{margin:5px 0;color:var(--gold);font-size:34px;text-shadow:0 0 18px #b7791f}
+.subtitle{color:var(--muted);font-size:13px}
+.panel,.card{
+  background:var(--panel);border:1px solid rgba(255,255,255,.1);
+  border-radius:18px;padding:16px;margin-bottom:13px;
+  box-shadow:0 8px 30px rgba(0,0,0,.2)
+}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{text-align:center;color:var(--muted);font-size:11px}
+.stat b{display:block;color:var(--gold);font-size:21px;margin-top:6px}
+button{
+  border:0;cursor:pointer;color:white;font-size:15px;font-weight:bold;
+  border-radius:13px;padding:13px;margin:6px 0
+}
+.primary{
+  background:linear-gradient(135deg,#ffd166,#e08e20);color:#241400;
+  box-shadow:0 4px 0 #a85d0b
+}
+.secondary{background:rgba(255,255,255,.08);border:1px solid rgba(255,209,102,.4)}
+.danger{background:var(--danger)}
+.back{margin-top:auto}
+.section-title{color:var(--gold);margin:5px 0 15px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.card small{color:var(--muted)}
+.card button{padding:8px 13px;font-size:12px;background:var(--gold);color:#241400}
+.mission{display:flex;justify-content:space-between;padding:14px;border-radius:12px;background:rgba(255,255,255,.07);margin:8px 0}
+.done{opacity:.5;border:1px solid var(--green)}
+#game{padding:0;background:#050916}
+canvas{width:100%;height:100%;display:block}
+.hud{
+ position:absolute;top:15px;left:14px;right:14px;z-index:3;
+ display:flex;justify-content:space-between;font-size:20px;
+ text-shadow:2px 2px 4px #000;pointer-events:none
+}
+.hud span{color:var(--gold);font-weight:bold}
+.game-help{
+ position:absolute;bottom:20px;left:0;right:0;text-align:center;
+ color:#cbd5e1;font-size:12px;pointer-events:none
+}
+.pay-address{
+ direction:ltr;word-break:break-all;background:#050916;
+ color:var(--gold);padding:12px;border-radius:10px;
+ font-family:monospace;font-size:12px;text-align:center
+}
+.notice{font-size:12px;color:var(--muted);line-height:1.8}
+</style>
+</head>
+
+<body>
+<div id="app">
+
+<header class="top">
+  <div class="logo">🏺 WORLD TREASURE</div>
+  <button class="lang" onclick="toggleLanguage()">FA / EN</button>
+  <div class="badge">❤️ <span id="lives">5</span></div>
+</header>
+
+<!-- HOME -->
+<section id="home" class="screen active">
+  <div class="hero">
+    <div class="icon">🗺️💎</div>
+    <h1 data-fa="گنجینه جهانی" data-en="World Treasure">گنجینه جهانی</h1>
+    <div class="subtitle" data-fa="سفر به سرزمین‌های باستانی" data-en="A journey through ancient lands">
+      سفر به سرزمین‌های باستانی
+    </div>
+  </div>
+
+  <div class="panel stats">
+    <div class="stat">
+      <span data-fa="بهترین رکورد" data-en="Best Score">بهترین رکورد</span>
+      <b id="best">0</b>
+    </div>
+    <div class="stat">
+      <span data-fa="کل گنج‌ها" data-en="Treasures">کل گنج‌ها</span>
+      <b id="total">0</b>
+    </div>
+    <div class="stat">
+      <span data-fa="جان بعدی" data-en="Next Life">جان بعدی</span>
+      <b id="timer">کامل</b>
+    </div>
+  </div>
+
+  <button class="primary" onclick="startGame()" data-fa="🧭 شروع کاوش" data-en="🧭 Start Quest">
+    🧭 شروع کاوش
+  </button>
+  <button class="secondary" onclick="show('countries')" data-fa="🌍 کشورهای قابل کشف" data-en="🌍 Discover Countries">
+    🌍 کشورهای قابل کشف
+  </button>
+  <button class="secondary" onclick="show('missions')" data-fa="🏆 مأموریت‌ها" data-en="🏆 Missions">
+    🏆 مأموریت‌ها
+  </button>
+  <button class="secondary" onclick="show('shop')" data-fa="🛒 بازار گنجینه" data-en="🛒 Treasure Shop">
+    🛒 بازار گنجینه
+  </button>
+</section>
+
+<!-- COUNTRIES -->
+<section id="countries" class="screen">
+  <h2 class="section-title" data-fa="کشورهای قابل کشف" data-en="Discoverable Countries">
+    کشورهای قابل کشف
+  </h2>
+
+  <div class="card"><div class="row"><span>🇮🇷 ایران</span><b>🏺</b></div><small>تخت جمشید و گنج‌های هخامنشی</small></div>
+  <div class="card"><div class="row"><span>🇪🇬 مصر</span><b>🪙</b></div><small>اهرام و طلاهای فرعونی</small></div>
+  <div class="card"><div class="row"><span>🇬🇷 یونان</span><b>⚱️</b></div><small>آثار باستانی یونان</small></div>
+  <div class="card"><div class="row"><span>🇮🇳 هند</span><b>💎</b></div><small>جواهرات و الماس‌های سلطنتی</small></div>
+  <div class="card"><div class="row"><span>🇲🇽 مکزیک</span><b>🌞</b></div><small>تمدن مایا و گنج‌های خورشیدی</small></div>
+
+  <button class="secondary back" onclick="show('home')" data-fa="بازگشت" data-en="Back">بازگشت</button>
+</section>
+
+<!-- MISSIONS -->
+<section id="missions" class="screen">
+  <h2 class="section-title" data-fa="مأموریت‌های اکتشاف" data-en="Exploration Missions">
+    مأموریت‌های اکتشاف
+  </h2>
+  <div id="missionList"></div>
+  <button class="secondary back" onclick="show('home')" data-fa="بازگشت" data-en="Back">بازگشت</button>
+</section>
+
+<!-- SHOP -->
+<section id="shop" class="screen">
+  <h2 class="section-title" data-fa="بازار گنجینه" data-en="Treasure Shop">بازار گنجینه</h2>
+
+  <div class="card row">
+    <div>❤️ ۲۰ جان<br><small>۲ USDT - TRC20</small></div>
+    <button onclick="payment('2 USDT','۲۰ جان')">خرید</button>
+  </div>
+  <div class="card row">
+    <div>❤️ ۴۰ جان<br><small>۳ USDT - TRC20</small></div>
+    <button onclick="payment('3 USDT','۴۰ جان')">خرید</button>
+  </div>
+  <div class="card row">
+    <div>❤️ ۵۰ جان<br><small>۴ USDT - TRC20</small></div>
+    <button onclick="payment('4 USDT','۵۰ جان')">خرید</button>
+  </div>
+  <div class="card row">
+    <div>❤️ ۱۰۰ جان<br><small>۱۰ USDT - TRC20</small></div>
+    <button onclick="payment('10 USDT','۱۰۰ جان')">خرید</button>
+  </div>
+  <div class="card row">
+    <div>🎭 شخصیت اختصاصی<br><small>۲ USDT</small></div>
+    <button onclick="payment('2 USDT','شخصیت اختصاصی')">خرید</button>
+  </div>
+
+  <p class="notice">
+    پرداخت‌ها فقط از طریق Bitpin و شبکه Tron/TRC20 انجام می‌شوند.
+    پس از پرداخت، شناسه تراکنش را برای بررسی ارسال کنید.
+  </p>
+
+  <button class="secondary back" onclick="show('home')" data-fa="بازگشت" data-en="Back">بازگشت</button>
+</section>
+
+<!-- PAYMENT -->
+<section id="payment" class="screen">
+  <h2 class="section-title">💳 پرداخت Bitpin</h2>
+
+  <div class="panel">
+    <p>مبلغ: <b id="payAmount"></b></p>
+    <p>بابت: <b id="payItem"></b></p>
+    <p class="notice">مبلغ را دقیقاً با شبکه TRC20 ارسال کنید:</p>
+    <div class="pay-address" id="wallet"></div>
+    <button class="secondary" onclick="copyWallet()">📋 کپی آدرس</button>
+  </div>
+
+  <button class="primary" onclick="sendTelegram()">✅ ارسال درخواست در تلگرام</button>
+  <button class="secondary" onclick="show('shop')">انصراف</button>
+</section>
+
+<!-- GAME -->
+<section id="game" class="screen">
+  <div class="hud">
+    <div>💎 <span id="score">0</span></div>
+    <div>❤️ <span id="gameLives">5</span></div>
+  </div>
+  <canvas id="canvas"></canvas>
+  <div class="game-help">برای حرکت، انگشت خود را روی صفحه به چپ و راست بکشید</div>
+</section>
+
+</div>
+
+<script>
+/* ================= تنظیمات اصلی ================= */
+
+// آدرس واقعی ولت خودت را فقط در همین خط وارد کن.
+// این آدرس نمونه است و برای پرداخت واقعی استفاده نکن.
+const WALLET_ADDRESS = "YOUR_TRC20_WALLET_ADDRESS";
+
+// نام کاربری بات تلگرام بدون @
+const TELEGRAM_BOT = "starhunt_play_bot";
+
+/* ================= داده بازی ================= */
+
+let lang = localStorage.getItem("wt_lang") || "fa";
+
+let data = {
+  lives: Number(localStorage.getItem("wt_lives") ?? 5),
+  best: Number(localStorage.getItem("wt_best") ?? 0),
+  total: Number(localStorage.getItem("wt_total") ?? 0),
+  games: Number(localStorage.getItem("wt_games") ?? 0),
+  lastLife: Number(localStorage.getItem("wt_lastLife") ?? Date.now())
+};
+
+const missions = [
+  ["جمع‌آوری ۱۰ گنج","Collect 10 treasures",10],
+  ["جمع‌آوری ۵۰ گنج","Collect 50 treasures",50],
+  ["جمع‌آوری ۱۰۰ گنج","Collect 100 treasures",100],
+  ["رسیدن به امتیاز ۲۰","Reach score 20",20],
+  ["انجام ۵ کاوش","Complete 5 quests",5]
+];
+
+function save(){
+  localStorage.setItem("wt_lives",data.lives);
+  localStorage.setItem("wt_best",data.best);
+  localStorage.setItem("wt_total",data.total);
+  localStorage.setItem("wt_games",data.games);
+  localStorage.setItem("wt_lastLife",data.lastLife);
+  update();
+}
+
+function update(){
+  document.getElementById("lives").textContent=data.lives;
+  document.getElementById("gameLives").textContent=data.lives;
+  document.getElementById("best").textContent=data.best;
+  document.getElementById("total").textContent=data.total;
+  renderMissions();
+  document.querySelectorAll("[data-fa]").forEach(el=>{
+    el.textContent=el.getAttribute("data-"+lang);
+  });
+  document.documentElement.dir=lang==="fa"?"rtl":"ltr";
+}
+
+function toggleLanguage(){
+  lang=lang==="fa"?"en":"fa";
+  localStorage.setItem("wt_lang",lang);
+  update();
+}
+
+function show(id){
+  document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+function renderMissions(){
+  const box=document.getElementById("missionList");
+  if(!box)return;
+  box.innerHTML="";
+  missions.forEach((m,i)=>{
+    let value=i<3?data.total:i===3?data.best:data.games;
+    let done=value>=m[2];
+    box.innerHTML+=`
+      <div class="mission ${done?"done":""}">
+        <span>${lang==="fa"?m[0]:m[1]}</span>
+        <b>${done?"✅":"🔒"}</b>
+      </div>`;
+  });
+}
+
+/* ================= شارژ جان ================= */
+
+setInterval(()=>{
+  if(data.lives<5){
+    const hour=3600000;
+    const passed=Date.now()-data.lastLife;
+    if(passed>=hour){
+      data.lives=Math.min(5,data.lives+Math.floor(passed/hour));
+      data.lastLife=Date.now();
+      save();
+    }
+    const remaining=hour-(passed%hour);
+    const min=Math.floor(remaining/60000);
+    const sec=Math.floor(remaining/1000)%60;
+    document.getElementById("timer").textContent=
+      String(min).padStart(2,"0")+":"+String(sec).padStart(2,"0");
+  }else{
+    document.getElementById("timer").textContent=lang==="fa"?"کامل":"FULL";
+  }
+},1000);
+
+/* ================= موتور بازی ================= */
+
+const canvas=document.getElementById("canvas");
+const ctx=canvas.getContext("2d");
+
+let playing=false,score=0,raf;
+let player={x:0,y:0,size:25};
+let treasures=[],traps=[];
+let lastSpawn=0;
+
+function resize(){
+  canvas.width=canvas.parentElement.clientWidth;
+  canvas.height=canvas.parentElement.clientHeight;
+  player.y=canvas.height-90;
+  if(!player.x)player.x=canvas.width/2;
+}
+
+function startGame(){
+  if(data.lives<=0){
+    alert(lang==="fa"?"جان کافی ندارید!":"No lives available!");
+    return;
+  }
+
+  data.lives--;
+  data.games++;
+  save();
+  show("game");
+  resize();
+
+  score=0;
+  treasures=[];
+  traps=[];
+  player.x=canvas.width/2;
+  playing=true;
+  document.getElementById("score").textContent=0;
+  cancelAnimationFrame(raf);
+  loop();
+}
+
+function createTreasure(){
+  treasures.push({
+    x:20+Math.random()*(canvas.width-40),
+    y:-35,
+    speed:2.5+Math.random()*2,
+    icon:["💰","💎","🏺","🪙"][Math.floor(Math.random()*4)]
+  });
+}
+
+function createTrap(){
+  traps.push({
+    x:20+Math.random()*(canvas.width-40),
+    y:-35,
+    speed:3.5+Math.random()*2,
+    icon:["🪨","🕳️","💣"][Math.floor(Math.random()*3)]
+  });
+}
+
+function drawBackground(){
+  ctx.fillStyle="#050916";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  for(let i=0;i<45;i++){
+    let x=(i*83)%canvas.width;
+    let y=(i*137+Date.now()/35)%canvas.height;
+    ctx.fillStyle="rgba(255,209,102,.35)";
+    ctx.fillRect(x,y,2,2);
+  }
+
+  ctx.fillStyle="rgba(255,209,102,.08)";
+  ctx.fillRect(0,canvas.height-130,canvas.width,130);
+}
+
+function collision(a,b){
+  return Math.hypot(a.x-b.x,a.y-b.y)<35;
+}
+
+function loop(){
+  if(!playing)return;
+
+  drawBackground();
+  const now=Date.now();
+
+  if(now-lastSpawn>500){
+    if(Math.random()<.65)createTreasure();
+    if(Math.random()<.3)createTrap();
+    lastSpawn=now;
+  }
+
+  // شخصیت کاوشگر
+  ctx.font="42px serif";
+  ctx.textAlign="center";
+  ctx.fillText("🤠",player.x,player.y+15);
+
+  treasures.forEach((t,i)=>{
+    t.y+=t.speed;
+    ctx.font="30px serif";
+    ctx.fillText(t.icon,t.x,t.y);
+
+    if(collision({x:player.x,y:player.y},t)){
+      score++;
+      data.total++;
+      treasures.splice(i,1);
+      document.getElementById("score").textContent=score;
+      save();
+    }else if(t.y>canvas.height+40)treasures.splice(i,1);
+  });
+
+  traps.forEach((t,i)=>{
+    t.y+=t.speed;
+    ctx.font="31px serif";
+    ctx.fillText(t.icon,t.x,t.y);
+
+    if(collision({x:player.x,y:player.y},t)){
+      endGame();
+    }else if(t.y>canvas.height+40)traps.splice(i,1);
+  });
+
+  raf=requestAnimationFrame(loop);
+}
+
+function endGame(){
+  if(!playing)return;
+  playing=false;
+  cancelAnimationFrame(raf);
+
+  data.best=Math.max(data.best,score);
+  save();
+
+  setTimeout(()=>{
+    alert((lang==="fa"?"پایان کاوش! امتیاز شما: ":"Quest over! Score: ")+score);
+    show("home");
+  },100);
+}
+
+canvas.addEventListener("touchmove",e=>{
+  e.preventDefault();
+  const rect=canvas.getBoundingClientRect();
+  player.x=e.touches[0].clientX-rect.left;
+  player.x=Math.max(25,Math.min(canvas.width-25,player.x));
+},{passive:false});
+
+canvas.addEventListener("mousemove",e=>{
+  if(e.buttons){
+    const rect=canvas.getBoundingClientRect();
+    player.x=e.clientX-rect.left;
+  }
+});
+
+window.addEventListener("resize",resize);
+
+/* ================= پرداخت ================= */
+
+let currentPayment={amount:"",item:""};
+
+function payment(amount,item){
+  currentPayment={amount,item};
+  document.getElementById("payAmount").textContent=amount;
+  document.getElementById("payItem").textContent=item;
+  document.getElementById("wallet").textContent=WALLET_ADDRESS;
+  show("payment");
+}
+
+function copyWallet(){
+  navigator.clipboard.writeText(WALLET_ADDRESS)
+    .then(()=>alert("آدرس کپی شد"))
+    .catch(()=>alert("کپی خودکار انجام نشد؛ آدرس را دستی کپی کنید."));
+}
+
+function sendTelegram(){
+  const text=
+    `سلام، درخواست خرید دارم.\n`+
+    `محصول: ${currentPayment.item}\n`+
+    `مبلغ: ${currentPayment.amount}\n`+
+    `شبکه: TRC20 / Tron\n`+
+    `لطفاً شناسه تراکنش را ارسال می‌کنم.`;
+
+  window.open(
+    "https://t.me/"+TELEGRAM_BOT+"?text="+encodeURIComponent(text),
+    "_blank"
+  );
+}
+
+update();
+</script>
+</body>
+</html>
