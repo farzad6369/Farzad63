@@ -1,61 +1,348 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>گنجینه جهانی - World Treasure</title>
-<style>
-:root{--bg:#080d1d;--panel:rgba(18,29,56,.9);--gold:#ffd166;--text:#f8f9fa;--muted:#a9b4cf;--danger:#ef476f;--green:#06d6a0;--red:#c52035;--darkred:#4a0b15}
-*{box-sizing:border-box;font-family:Tahoma,sans-serif}
-body{margin:0;background:radial-gradient(circle at top,#203a72,#080d1d 70%);color:var(--text);height:100vh;overflow:hidden;transition:background 0.5s}
-body.final-phase{background:radial-gradient(circle at top,var(--red),var(--darkred) 80%)}
-#app{max-width:480px;height:100vh;margin:auto;position:relative;display:flex;flex-direction:column}
-header{height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 15px;background:rgba(0,0,0,.4);border-bottom:1px solid rgba(255,209,102,.3);z-index:10}
-.badge{background:#7d1934;padding:6px 12px;border-radius:20px;font-size:14px;font-weight:bold;display:flex;align-items:center;gap:5px}
-.screen{position:absolute;inset:60px 0 0;padding:20px;display:none;overflow-y:auto;z-index:5}
-.screen.active{display:flex;flex-direction:column}
-.panel,.card{background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:15px;padding:15px;margin-bottom:12px}
-h1{color:var(--gold);text-align:center;margin:10px 0}
-button{border:0;border-radius:12px;padding:14px;font-weight:bold;cursor:pointer;transition:0.2s;margin:5px 0}
-.btn-main{background:linear-gradient(135deg,#ffd166,#e08e20);color:#241400}
-.btn-sub{background:rgba(255,255,255,.1);color:white;border:1px solid rgba(255,209,102,0.4)}
-.wallet-box{background:#000;padding:12px;border-radius:10px;font-family:monospace;font-size:11px;word-break:break-all;color:var(--gold);text-align:center;margin:10px 0;border:1px dashed var(--gold)}
-.progress-bar{height:8px;background:#1e293b;border-radius:4px;margin:10px 0;overflow:hidden}
-.progress-fill{height:100%;background:var(--gold);width:0%;transition:0.5s}
-canvas{width:100%;height:100%;display:block;background:#050916}
-.hud{position:absolute;top:15px;left:15px;right:15px;display:flex;justify-content:space-between;font-size:20px;text-shadow:2px 2px 4px #000;pointer-events:none}
-/* Golden Pack Animation */
-.gold-pack{border:2px solid var(--gold);background:linear-gradient(145deg,#4a0b15,#8d1326);animation:glow 1.5s infinite alternate;text-align:center}
-@keyframes glow{from{box-shadow:0 0 10px var(--gold)}to{box-shadow:0 0 25px var(--gold)}}
-.final-timer{color:var(--gold);font-weight:bold;font-size:18px;text-align:center;background:rgba(0,0,0,0.5);padding:10px;border-radius:10px;margin-bottom:10px}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>گنجینه جهانی</title>
+    <!-- اتصال به کتابخانه وب‌اپ تلگرام -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --bg-color: #0b1528;
+            --card-color: #162544;
+            --accent-color: #ffc107;
+            --accent-hover: #e0a800;
+            --text-color: #ffffff;
+            --text-muted: #8fa0c4;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Tahoma, Geneva, sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 480px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        /* هدر بازی */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .hearts-indicator {
+            background: rgba(220, 53, 69, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: bold;
+            color: #ff4d6d;
+            border: 1px solid rgba(220, 53, 69, 0.4);
+        }
+
+        .title-brand {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            text-shadow: 0 0 10px rgba(255, 193, 7, 0.3);
+        }
+
+        /* کارت مرکزی */
+        .main-card {
+            background-color: var(--card-color);
+            border-radius: 24px;
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 15px 0;
+        }
+
+        .treasure-icon {
+            font-size: 5rem;
+            margin-bottom: 15px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .main-title {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .subtitle {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 25px;
+        }
+
+        /* آمارها */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            width: 100%;
+            margin-bottom: 25px;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 10px 5px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-val {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .stat-lbl {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* دکمه‌های اصلی */
+        .btn {
+            background-color: var(--accent-color);
+            color: #000;
+            border: none;
+            padding: 16px;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            width: 100%;
+            cursor: pointer;
+            transition: transform 0.1s, background-color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+            background-color: var(--accent-hover);
+        }
+
+        .btn-invite {
+            background: linear-gradient(135deg, #1d3557, #457b9d);
+            color: #fff;
+            margin-top: 12px;
+            font-size: 0.95rem;
+            padding: 14px;
+            box-shadow: none;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* منوی پایین */
+        .footer-menu {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .menu-item {
+            background-color: var(--card-color);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .menu-item:active {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .menu-title {
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+
+        .menu-desc {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+    </style>
 </head>
-<body id="main-body">
-<div id="app">
-    <header>
-        <div style="font-weight:bold;color:var(--gold)">🏺 WORLD TREASURE</div>
-        <div class="badge">❤️ <span id="top-lives">5</span></div>
-    </header>
+<body>
 
-    <!-- SCREEN: HOME -->
-    <section id="scr-home" class="screen active">
-        <h1>گنجینه جهانی</h1>
-        <div class="panel">
-            <div style="display:flex;justify-content:space-between"><small>مأموریت‌ها</small><small id="progress-txt">0/10</small></div>
-            <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
+    <div class="game-container">
+        <!-- هدر -->
+        <div class="header">
+            <div class="hearts-indicator">
+                <span id="heart-count">5</span> ❤️
+            </div>
+            <div class="title-brand">WORLD TREASURE 🏺</div>
         </div>
-        <button class="btn-main" onclick="startQuest()">🧭 شروع کاوش</button>
-        <button class="btn-sub" onclick="openScr('scr-shop')">🛒 بازارچه</button>
-        <button class="btn-sub" onclick="openScr('scr-comp')">🏆 مسابقات هفتگی</button>
-    </section>
 
-    <!-- SCREEN: SHOP -->
-    <section id="scr-shop" class="screen">
-        <h1>🛒 بازارچه</h1>
-        <div id="normal-packs">
-            <div class="card" onclick="goPay('2 USDT','10 Lives')">❤️ ۱۰ جان (۲ تتر)</div>
-            <div class="card" onclick="goPay('3 USDT','20 Lives')">❤️ ۲۰ جان (۳ تتر)</div>
-            <div class="card" onclick="goPay('10 USDT','100 Lives')">❤️ ۱۰۰ جان (۱۰ تتر)</div>
+        <!-- کارت اصلی منو -->
+        <div class="main-card">
+            <div class="treasure-icon">🏺</div>
+            <h1 class="main-title">گنجینه جهانی</h1>
+            <p class="subtitle">آماده برای کاوش و کشف گنج‌ها؟</p>
+
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-val" id="best-score">0</div>
+                    <div class="stat-lbl">بهترین رکورد</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-val" id="total-treasures">0</div>
+                    <div class="stat-lbl">کل گنج‌ها</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-val" id="regen-timer">--:--</div>
+                    <div class="stat-lbl">شارژ جان</div>
+                </div>
+            </div>
+
+            <!-- دکمه شروع بازی -->
+            <button class="btn" id="start-btn">
+                🧭 شروع کاوش
+            </button>
+
+            <!-- دکمه دعوت از دوستان -->
+            <button class="btn btn-invite" id="invite-btn">
+                ✨ ۵۰ جان رایگان! ۵ دوست دعوت کن ➔
+            </button>
         </div>
-        <!-- Golden Pack - Only shows in final 5 hours -->
-        <div...="...
+
+        <!-- فوتر / بخش‌های دیگر -->
+        <div class="footer-menu">
+            <div class="menu-item" id="shop-btn">
+                <div class="menu-title">🛒 بازارچه</div>
+                <div class="menu-desc">به زودی</div>
+            </div>
+            <div class="menu-item" id="events-btn">
+                <div class="menu-title">🏆 مسابقات</div>
+                <div class="menu-desc">به زودی</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // مقداردهی اولیه به کتابخانه تلگرام
+        const tg = window.Telegram ? window.Telegram.WebApp : null;
+        if (tg) {
+            tg.ready();
+            tg.expand(); // تمام‌صفحه کردن بازی در تلگرام
+        }
+
+        // المان‌های صفحه
+        const startBtn = document.getElementById('start-btn');
+        const inviteBtn = document.getElementById('invite-btn');
+        const shopBtn = document.getElementById('shop-btn');
+        const eventsBtn = document.getElementById('events-btn');
+
+        // عملکرد دکمه شروع کاوش
+        startBtn.addEventListener('click', () => {
+            if (tg) {
+                tg.showAlert('بازی آغاز شد! آماده کاوش باشید.');
+            } else {
+                alert('بازی آغاز شد! (مرورگر عادی)');
+            }
+        });
+
+        // عملکرد دکمه دعوت از دوستان
+        inviteBtn.addEventListener('click', () => {
+            if (tg) {
+                // ارسال لینک دعوت به مخاطبان تلگرام
+                tg.openTelegramLink('https://t.me/share/url?url=https://t.me/starhunt_game_v2_bot&text=به بازی گنجینه جهانی بپیوند و جان رایگان بگیر!');
+            } else {
+                alert('لینک دعوت کپی شد: https://t.me/starhunt_game_v2_bot');
+            }
+        });
+
+        // عملکرد دکمه‌های فوتر
+        shopBtn.addEventListener('click', () => {
+            if (tg) {
+                tg.showPopup({
+                    title: 'بازارچه خرید جان و کاراکتر',
+                    message: 'سیستم خرید با تتر به زودی فعال خواهد شد.',
+                    buttons: [{type: 'ok'}]
+                });
+            } else {
+                alert('بازارچه به زودی باز می‌شود.');
+            }
+        });
+
+        eventsBtn.addEventListener('click', () => {
+            if (tg) {
+                tg.showPopup({
+                    title: 'مسابقات هفتگی',
+                    message: 'لیست مسابقات و لیدربورد به زودی در اینجا فعال می‌شود.',
+                    buttons: [{type: 'ok'}]
+                });
+            } else {
+                alert('مسابقات به زودی فعال می‌شود.');
+            }
+        });
+
+        // سیستم شمارش معکوس آزمایشی برای جان
+        let minutes = 59;
+        let seconds = 59;
+        const timerElement = document.getElementById('regen-timer');
+
+        setInterval(() => {
+            if (seconds > 0) {
+                seconds--;
+            } else {
+                if (minutes > 0) {
+                    minutes--;
+                    seconds = 59;
+                } else {
+                    minutes = 59;
+                    seconds = 59;
+                }
+            }
+            const displayMin = minutes < 10 ? '0' + minutes : minutes;
+            const displaySec = seconds < 10 ? '0' + seconds : seconds;
+            timerElement.textContent = `${displayMin}:${displaySec}`;
+        }, 1000);
+    </script>
+</body>
+</html>
