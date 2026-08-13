@@ -6,7 +6,7 @@
     <title>گنجینه جهانی | World Treasure</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* --- متغیرهای اصلی --- */
+        /* --- استایل‌های عمومی --- */
         :root {
             --gold: #ffc107;
             --gold-glow: rgba(255, 193, 7, 0.4);
@@ -15,27 +15,26 @@
             --accent-cyan: #00e5ff;
             --danger-red: #ff4d6d;
             --dark-overlay: rgba(5, 10, 22, 0.98);
-            --border-color: rgba(255, 255, 255, 0.08);
-            --input-bg: #000;
-            --button-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
+            --button-gradient: linear-gradient(135deg, var(--gold) 0%, #ff9800 100%);
+            --input-bg: rgba(0, 0, 0, 0.3);
+            --border-color: rgba(255, 255, 255, 0.05);
+            --secondary-text: #8d9dbf;
         }
 
-        /* --- استایل‌های عمومی --- */
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, sans-serif;
-            user-select: none; /* جلوگیری از انتخاب متن */
+            user-select: none;
             -webkit-user-select: none;
-            -webkit-tap-highlight-color: transparent; /* حذف هایلایت کلیک در موبایل */
         }
 
         body {
             background-color: var(--deep-blue);
             background-image: radial-gradient(circle at 50% 20%, #172d54 0%, var(--deep-blue) 80%);
             color: #fff;
-            min-height: 100vh; /* حداقل ارتفاع صفحه نمایش */
+            min-height: 100dvh;
             display: flex;
             justify-content: center;
             overflow-x: hidden;
@@ -43,7 +42,6 @@
             position: relative;
         }
 
-        /* افکت ذرات شناور طلایی */
         body::before {
             content: "";
             position: fixed;
@@ -60,7 +58,6 @@
             to { transform: translateY(-1000px); }
         }
 
-        /* --- نمایشگر بازی --- */
         .game-viewport {
             width: 100%;
             max-width: 450px;
@@ -69,7 +66,7 @@
             flex-direction: column;
             gap: 15px;
             animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-            padding-bottom: 90px; /* فضای خالی برای نوار پایین */
+            padding-bottom: 90px;
         }
 
         @keyframes fadeIn {
@@ -77,7 +74,6 @@
             to { opacity: 1; transform: scale(1); }
         }
 
-        /* --- نوار بالا --- */
         .top-bar {
             display: flex;
             justify-content: space-between;
@@ -85,7 +81,7 @@
             background: rgba(0, 0, 0, 0.35);
             padding: 10px 18px;
             border-radius: 50px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
             backdrop-filter: blur(5px);
         }
 
@@ -114,12 +110,203 @@
             gap: 6px;
         }
 
-        /* --- نقشه ماجراجویی --- */
+        .action-banner {
+            background: rgba(10, 20, 38, 0.95);
+            border: 1px solid rgba(255, 193, 7, 0.2);
+            border-radius: 20px;
+            padding: 15px;
+            text-align: center;
+            margin-top: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+
+        .btn-action {
+            background: var(--button-gradient);
+            color: #000;
+            border: none;
+            padding: 15px;
+            border-radius: 14px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
+            transition: all 0.1s;
+        }
+
+        .btn-action:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 5px rgba(255, 193, 7, 0.2);
+        }
+
+        .bottom-bar {
+            position: fixed;
+            bottom: 0; left: 0; width: 100%;
+            height: 70px;
+            background: #070d1a;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            z-index: 100;
+        }
+
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #5d729c;
+            text-decoration: none;
+            gap: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .tab-item.active {
+            color: var(--gold);
+        }
+
+        .tab-icon { font-size: 1.3rem; }
+
+        .fullscreen-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--dark-overlay);
+            z-index: 500;
+            overflow-y: auto;
+            padding: 25px;
+        }
+
+        .overlay-box {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 25px;
+            max-width: 400px;
+            margin: 40px auto;
+            position: relative;
+        }
+
+        .close-overlay {
+            position: absolute; top: 15px; left: 15px;
+            background: none; border: none; color: #fff; font-size: 1.3rem; cursor: pointer;
+        }
+
+        /* --- استایل‌های صفحه ورود --- */
+        .login-page {
+            background: var(--deep-blue);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100dvh;
+            padding: 20px;
+        }
+
+        .login-box {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 30px 25px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        }
+
+        .login-title {
+            color: var(--gold);
+            font-size: 1.6rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 15px var(--gold-glow);
+        }
+
+        .login-subtitle {
+            font-size: 0.9rem;
+            color: var(--secondary-text);
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            text-align: right;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.85rem;
+            color: #c0c0c0;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 12px 15px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .input-group select {
+            appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="white"><path d="M8 11.293l-4.5-4.5a.75.75 0 0 1 1.06-1.06L8 9.879l3.414-3.415a.75.75 0 0 1 1.06 1.06L8 11.293z"></path></svg>');
+            background-repeat: no-repeat;
+            background-position: left 15px center;
+            background-size: 16px;
+            padding-left: 40px;
+        }
+
+        .gender-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .gender-btn {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: #fff;
+            padding: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .gender-btn:hover {
+            background: rgba(255, 193, 7, 0.1);
+        }
+
+        .gender-btn.selected {
+            background: var(--gold);
+            color: #000;
+            border-color: var(--gold);
+            font-weight: bold;
+        }
+
+        .avatar-upload-section {
+            margin-top: 20px;
+            border-top: 1px solid rgba(255,255,255,.1);
+            padding-top: 15px;
+        }
+
+        .avatar-upload-section p {
+            font-size: 0.75rem;
+            color: var(--secondary-text);
+            margin-top: 5px;
+        }
+
+        /* --- استایل‌های نقشه --- */
         .adventure-map {
             background: var(--card-bg);
             border-radius: 28px;
             padding: 25px 15px;
-            border: 1px solid var(--border-color);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: 0 15px 35px rgba(0,0,0,0.6);
             display: flex;
             flex-direction: column;
@@ -143,7 +330,6 @@
             gap: 24px;
         }
 
-        /* خط اتصال بین مراحل */
         .path-container::before {
             content: "";
             position: absolute;
@@ -200,163 +386,7 @@
             filter: grayscale(1);
         }
 
-        /* --- بنر اقدام (دکمه شروع مأموریت) --- */
-        .action-banner {
-            background: rgba(10, 20, 38, 0.95);
-            border: 1px solid rgba(255, 193, 7, 0.2);
-            border-radius: 20px;
-            padding: 15px;
-            text-align: center;
-            margin-top: 15px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
-        }
-
-        .btn-action {
-            background: linear-gradient(135deg, var(--gold) 0%, #ff9800 100%);
-            color: #000;
-            border: none;
-            padding: 15px;
-            border-radius: 14px;
-            font-size: 1.1rem;
-            font-weight: 800;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 10px;
-            box-shadow: var(--button-shadow);
-            transition: all 0.1s;
-        }
-
-        .btn-action:active {
-            transform: translateY(2px);
-            box-shadow: 0 2px 5px rgba(255, 193, 7, 0.2);
-        }
-
-        /* --- نوار ناوبری پایین --- */
-        .bottom-bar {
-            position: fixed;
-            bottom: 0; left: 0; width: 100%;
-            height: 70px;
-            background: #070d1a;
-            border-top: 1px solid rgba(255,255,255,0.06);
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            z-index: 100;
-        }
-
-        .tab-item {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: #5d729c;
-            text-decoration: none;
-            gap: 4px;
-            font-size: 0.75rem;
-            font-weight: bold;
-        }
-
-        .tab-item.active {
-            color: var(--gold);
-        }
-
-        .tab-icon { font-size: 1.3rem; }
-
-        /* --- نواحی تمام صفحه (مودال‌ها) --- */
-        .fullscreen-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--dark-overlay);
-            z-index: 500;
-            overflow-y: auto;
-            padding: 25px;
-        }
-
-        .overlay-box {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 24px;
-            padding: 25px;
-            max-width: 400px;
-            margin: 40px auto;
-            position: relative;
-        }
-
-        .close-overlay {
-            position: absolute; top: 15px; left: 15px;
-            background: none; border: none; color: #fff; font-size: 1.3rem; cursor: pointer;
-        }
-
-        /* --- آیتم‌های فروشگاه --- */
-        .shop-item {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.06);
-            padding: 12px;
-            border-radius: 14px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .buy-btn {
-            background: var(--gold);
-            color: #000;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        .buy-btn:hover { background: #e0a800; }
-
-        /* --- انتخاب منطقه پرداخت --- */
-        .region-selector {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin: 15px 0;
-        }
-
-        .region-btn {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: #fff;
-            padding: 10px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.2s;
-        }
-
-        .region-btn.active {
-            background: var(--gold);
-            color: #000;
-            border-color: var(--gold);
-        }
-
-        /* --- باکس پرداخت کریپتو --- */
-        .crypto-box {
-            background: #050a16;
-            border: 1px dashed var(--gold);
-            padding: 15px;
-            border-radius: 12px;
-            margin-top: 15px;
-            text-align: center;
-        }
-
-        .qr-code-img {
-            width: 140px;
-            height: 140px;
-            margin: 10px auto;
-            background: #fff;
-            padding: 5px;
-            border-radius: 10px;
-            display: block;
-        }
-
-        /* --- بخش بازی (داخل مودال) --- */
+        /* --- استایل‌های بازی (چالش) --- */
         .game-box {
             text-align: center;
         }
@@ -384,475 +414,324 @@
             padding: 14px;
             cursor: pointer;
             font-size: 1rem;
-            transition: all 0.2s ease;
         }
 
         .challenge-option:hover {
             background: var(--gold);
             color: #000;
-            border-color: #fff;
         }
 
         .challenge-result {
             min-height: 30px;
             margin-top: 18px;
             font-weight: bold;
-            animation: fadeInResult 0.5s forwards;
         }
 
-        @keyframes fadeInResult {
-            from { opacity: 0; transform: translateY(-5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* --- بخش چت --- */
-        .chat-box {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 24px;
-            padding: 20px;
-            margin: 10px auto;
-            max-width: 400px;
-            height: 70vh; /* ارتفاع ثابت برای چت */
+        /* --- استایل‌های بازارچه و پرداخت --- */
+        .shop-item {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            padding: 12px;
+            border-radius: 14px;
+            margin-bottom: 10px;
             display: flex;
-            flex-direction: column;
             justify-content: space-between;
-        }
-
-        .chat-header {
-            text-align: center;
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--gold);
-            margin-bottom: 15px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-        }
-
-        .chat-messages {
-            flex-grow: 1; /* پیام‌ها فضا را پر می‌کنند */
-            overflow-y: auto; /* اسکرول برای پیام‌ها */
-            margin-bottom: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .message {
-            padding: 8px 12px;
-            border-radius: 10px;
-            max-width: 75%;
-            word-wrap: break-word; /* شکستن کلمات طولانی */
-            line-height: 1.6;
-            font-size: 0.85rem;
-        }
-
-        .message.sent {
-            background: var(--gold);
-            color: #000;
-            margin-left: auto; /* پیام‌های ارسالی راست چین */
-            border-bottom-right-radius: 4px;
-        }
-
-        .message.received {
-            background: rgba(255,255,255,0.1);
-            color: #fff;
-            margin-right: auto; /* پیام‌های دریافتی چپ چین */
-            border-bottom-left-radius: 4px;
-        }
-
-        .message-sender {
-            font-weight: bold;
-            font-size: 0.7rem;
-            margin-bottom: 3px;
-            display: block;
-        }
-
-        .chat-input-area {
-            display: flex;
-            gap: 10px;
             align-items: center;
         }
 
-        #chat-input {
-            flex-grow: 1;
-            padding: 10px 15px;
-            background: var(--input-bg);
-            border: 1px solid #333;
-            border-radius: 20px;
-            color: #fff;
-            font-size: 0.9rem;
-        }
-
-        #send-btn {
+        .buy-btn {
             background: var(--gold);
             color: #000;
             border: none;
-            padding: 10px 15px;
-            border-radius: 20px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .region-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .region-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #fff;
+            padding: 10px;
+            border-radius: 10px;
             cursor: pointer;
             font-weight: bold;
-            transition: background-color 0.2s;
-        }
-        #send-btn:hover { background: #e0a800; }
-
-        /* --- بخش پروفایل و آواتار --- */
-        .profile-box {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 24px;
-            padding: 25px;
-            max-width: 400px;
-            margin: 40px auto;
-            text-align: center;
+            transition: 0.2s;
         }
 
-        .avatar-preview {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            margin: 15px auto;
-            background-color: #333; /* رنگ پیش‌فرض */
-            border: 3px solid var(--gold);
-            box-shadow: 0 0 15px var(--gold-glow);
-            overflow: hidden; /* برای نمایش آواتارهای سفارشی */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .avatar-preview img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: cover;
-        }
-
-        .avatar-options button {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.15);
-            color: #fff;
-            padding: 8px 15px;
-            border-radius: 10px;
-            margin: 5px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            transition: background-color 0.2s;
-        }
-        .avatar-options button:hover { background: rgba(255,255,255,0.2); }
-
-        /* --- بخش توضیحات --- */
-        .info-box {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 24px;
-            padding: 25px;
-            max-width: 400px;
-            margin: 40px auto;
-            text-align: left; /* راست‌چین برای فارسی */
-            line-height: 1.8;
-            font-size: 0.9rem;
-        }
-
-        .info-box h3 {
-            color: var(--gold);
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        .info-box p, .info-box li {
-            margin-bottom: 10px;
-            color: #b7c4df;
-        }
-
-        .info-box li { margin-left: 20px; }
-
-        /* --- بخش ورود کاربر --- */
-        .login-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            background: var(--dark-overlay);
-            padding: 20px;
-            position: relative;
-            z-index: 1000; /* روی همه چیز باشد */
-        }
-
-        .login-box {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 24px;
-            padding: 30px;
-            text-align: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.7);
-            width: 100%;
-            max-width: 400px;
-        }
-
-        .login-box h1 {
-            color: var(--gold);
-            margin-bottom: 25px;
-            font-size: 1.8rem;
-        }
-
-        .input-field {
-            width: 100%;
-            padding: 12px 18px;
-            margin-bottom: 15px;
-            background: var(--input-bg);
-            border: 1px solid #333;
-            border-radius: 10px;
-            color: #fff;
-            font-size: 1rem;
-        }
-
-        .gender-selection {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .gender-btn {
-            padding: 10px 20px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            cursor: pointer;
-            background: rgba(255,255,255,0.05);
-            transition: all 0.2s;
-        }
-
-        .gender-btn.active {
+        .region-btn.active {
             background: var(--gold);
             color: #000;
             border-color: var(--gold);
         }
 
-        /* --- آواتار سفارشی --- */
-        .custom-avatar-uploader {
-            margin-top: 20px;
-            border-top: 1px dashed var(--border-color);
-            padding-top: 15px;
-        }
-
-        .custom-avatar-uploader input[type="file"] {
-            display: none;
-        }
-
-        .custom-avatar-uploader label {
-            background: var(--accent-cyan);
-            color: #000;
-            padding: 8px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-weight: bold;
-            transition: background-color 0.2s;
-        }
-        .custom-avatar-uploader label:hover { background: #00b8d4; }
-
-        /* --- صفحه مسابقه --- */
-        .competition-screen {
-            background: rgba(0,0,0,0.8);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 10px;
-            border: 1px solid var(--gold);
-        }
-        .competition-screen h3 { color: var(--gold); margin-bottom: 10px; }
-        .competition-screen p { font-size: 0.8rem; color: #b7c4df; }
-        .competition-screen .timer { color: var(--danger-red); font-weight: bold; }
-
-        /* --- صفحه نمایش جایزه --- */
-        .prize-display {
-            background: rgba(255,193,7, 0.1);
+        .crypto-box {
+            background: #050a16;
             border: 1px dashed var(--gold);
-            padding: 12px;
-            border-radius: 8px;
+            padding: 15px;
+            border-radius: 12px;
             margin-top: 15px;
             text-align: center;
-            font-size: 0.85rem;
-        }
-        .prize-display p { margin-bottom: 5px; }
-        .prize-display span { color: var(--gold); font-weight: bold; }
-
-        /* --- صفحه وضعیت پرداخت --- */
-        .payment-status-box {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 24px;
-            padding: 25px;
-            max-width: 400px;
-            margin: 40px auto;
-            text-align: center;
-        }
-        .payment-status-box h3 { color: var(--gold); margin-bottom: 15px; }
-        .payment-status-box p { color: #b7c4df; line-height: 1.8; }
-        .payment-status-box .txid {
-            font-family: monospace;
-            background: #000;
-            padding: 8px;
-            border-radius: 6px;
-            border: 1px solid #333;
-            margin: 15px 0;
-            word-break: break-all;
-            color: var(--gold);
-            font-size: 0.75rem;
-        }
-        .payment-status-box .copy-btn {
-            background: var(--accent-cyan);
-            color: #000;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-        .payment-status-box .copy-btn:hover { background: #00b8d4; }
-
-        /* --- افکت پیام قرمز در 5 ساعت آخر مسابقه --- */
-        .competition-screen.final-hours {
-            border-color: var(--danger-red);
-            box-shadow: 0 0 10px rgba(255, 77, 109, 0.5);
-            animation: flashRed 1s infinite alternate;
         }
 
-        @keyframes flashRed {
-            from { border-color: var(--danger-red); box-shadow: 0 0 10px rgba(255, 77, 109, 0.5); }
-            to { border-color: #fff; box-shadow: 0 0 15px rgba(255, 77, 109, 0.8); }
+        .qr-code-img {
+            width: 140px;
+            height: 140px;
+            margin: 10px auto;
+            background: #fff;
+            padding: 5px;
+            border-radius: 10px;
+            display: block;
         }
-
     </style>
 </head>
 <body>
 
-    <!-- --- صفحه ورود کاربر --- -->
-    <div id="login-screen" class="login-container">
+    <!-- صفحه ورود و انتخاب زبان -->
+    <div id="login-page-overlay" class="login-page">
         <div class="login-box">
-            <h1>به گنجینه جهانی خوش آمدید!</h1>
-            
-            <select id="language-selector" class="input-field" style="background: rgba(0,0,0,0.5); margin-bottom:20px;">
-                <option value="fa">فارسی</option>
-                <option value="en">English</option>
-            </select>
+            <h1 id="welcome-message" class="login-title">به گنجینه جهانی خوش آمدید!</h1>
+            <p class="login-subtitle">لطفاً اطلاعات خود را وارد کنید.</p>
 
-            <input type="text" id="username-input" class="input-field" placeholder="نام کاربری">
-            <input type="email" id="email-input" class="input-field" placeholder="ایمیل (اختیاری)">
+            <div class="input-group">
+                <label id="language-label" for="language-select">زبان:</label>
+                <select id="language-select">
+                    <option value="fa">فارسی</option>
+                    <option value="en">English</option>
+                    <!-- زبان های دیگر را اضافه کنید -->
+                </select>
+            </div>
 
-            <div class="gender-selection">
-                <button class="gender-btn active" data-gender="male">مرد 🤵</button>
-                <button class="gender-btn" data-gender="female">زن 👰</button>
+            <div class="input-group">
+                <label id="username-label" for="username-input">نام کاربری</label>
+                <input type="text" id="username-input" placeholder="نام کاربری خود را وارد کنید">
             </div>
-            
-            <button class="btn-action" id="create-profile-btn">شروع بازی</button>
-            
-            <div class="custom-avatar-uploader" style="margin-top: 20px;">
-                <label for="avatar-upload">آواتار سفارشی (اختیاری)</label>
-                <input type="file" id="avatar-upload" accept="image/*">
+
+            <div class="input-group">
+                <label id="email-label" for="email-input">ایمیل (اختیاری)</label>
+                <input type="email" id="email-input" placeholder="your@email.com">
             </div>
-            <p style="font-size:0.7rem; color:#888; margin-top:10px;">(فایل تصویری با حجم کم آپلود کنید)</p>
+
+            <div class="input-group">
+                <label id="gender-label">جنسیت</label>
+                <div class="gender-options">
+                    <button type="button" class="gender-btn" data-gender="female">
+                        <span class="gender-icon">👩</span> زن
+                    </button>
+                    <button type="button" class="gender-btn" data-gender="male">
+                        <span class="gender-icon">👨</span> مرد
+                    </button>
+                </div>
+            </div>
+
+            <div class="avatar-upload-section">
+                <button type="button" class="btn-action" id="upload-avatar-btn" style="margin-top: 0;">آواتار سفارشی (اختیاری)</button>
+                <p>(فایل تصویری با حجم کم آپلود کنید)</p>
+            </div>
+
+            <button type="button" class="btn-action" id="start-game-btn">شروع بازی</button>
         </div>
     </div>
 
-    <!-- --- نمایشگر اصلی بازی --- -->
-    <div class="game-viewport" id="main-game-screen" style="display:none;">
+    <!-- بخش اصلی بازی (نقشه، نوار بالا و پایین) -->
+    <div class="game-viewport">
         <!-- هدر -->
         <div class="top-bar">
             <div class="brand-logo">🏺 WORLD TREASURE</div>
             <div class="player-stats">
-                <div class="stat-pill">❤️ <span id="hearts-count">0</span></div>
+                <div class="stat-pill">❤️ <span id="hearts-count">5</span></div>
                 <div class="stat-pill">🪙 <span id="coins-count">0</span></div>
-                <div class="stat-pill">🌟 <span id="score-count">0</span></div>
             </div>
         </div>
 
-        <!-- نقشه ماجراجویی -->
+        <!-- بدنه نقشه داستان -->
         <div class="adventure-map">
-            <div class="map-title">🗺️ فصل ۱: ویرانه‌های فراموش‌شده</div>
+            <div class="map-title" id="map-title">🗺️ فصل ۱: ویرانه‌های فراموش‌شده</div>
             <div class="path-container" id="nodes-container"></div>
         </div>
 
-        <!-- بنر پیام‌ها و دعوت به بازی -->
+        <!-- پنل ماموریت جاری -->
         <div class="action-banner">
             <div id="mission-info">
                 <span style="font-size:0.75rem; color:var(--accent-cyan); display:block; margin-bottom:4px;">مأموریت فعال</span>
                 <h3 id="current-title" style="margin-bottom:6px; color:#fff;">مأموریت ۱</h3>
-                <p id="current-desc" style="font-size:0.75rem; color:#8d9dbf;">اولین قدم برای اکتشاف معبد باستانی.</p>
+                <p id="current-desc" style="font-size:0.75rem; color:var(--secondary-text);">اولین قدم برای اکتشاف معبد باستانی.</p>
             </div>
-            <button class="btn-action" id="action-btn">🧭 شروع مأموریت</button>
-            <p id="mission-cost" style="font-size:0.7rem; color:#aaa; margin-top:8px;">هزینه: ۲ تتر</p>
+            <button class="btn-action" id="action-btn">🧭 شروع ماجراجویی</button>
         </div>
     </div>
 
-    <!-- نوار ناوبری پایین -->
-    <nav class="bottom-bar" id="bottom-nav">
-        <a href="#" class="tab-item active" onclick="showScreen('main-game-screen'); closeAllOverlays();">
+    <!-- ناوبری پایین -->
+    <nav class="bottom-bar">
+        <a href="#" class="tab-item active" onclick="showView('map')">
             <span class="tab-icon">🗺️</span>
-            <span>نقشه</span>
+            <span id="nav-map">نقشه</span>
         </a>
-        <a href="#" class="tab-item" onclick="openOverlay('competition');">
+        <a href="#" class="tab-item" onclick="showView('competition')">
             <span class="tab-icon">🏆</span>
-            <span>مسابقات</span>
+            <span id="nav-competition">مسابقات هفتگی</span>
         </a>
-        <a href="#" class="tab-item" onclick="openOverlay('shop');">
+        <a href="#" class="tab-item" onclick="showView('shop')">
             <span class="tab-icon">🛒</span>
-            <span>بازارچه</span>
-        </a>
-        <a href="#" class="tab-item" onclick="openOverlay('chat');">
-            <span class="tab-icon">💬</span>
-            <span>چت</span>
-        </a>
-         <a href="#" class="tab-item" onclick="openOverlay('profile');">
-            <span class="tab-icon">👤</span>
-            <span>پروفایل</span>
+            <span id="nav-shop">بازارچه</span>
         </a>
     </nav>
 
-    <!-- --- مودال بازارچه --- -->
+    <!-- مودال بازارچه -->
     <div id="shop-overlay" class="fullscreen-overlay">
         <div class="overlay-box">
-            <button class="close-overlay" onclick="closeOverlay('shop')">✕</button>
-            <h2 style="color:var(--gold); text-align:center; margin-bottom:15px;">🛒 بازارچه تتر</h2>
-            <p style="font-size:0.8rem; color:#8fa0c4; margin-bottom:15px; text-align:center;">خرید آیتم‌های بازی با تتر TRC20</p>
+            <button class="close-overlay" onclick="closeView('shop')">✕</button>
+            <h2 id="shop-title" style="color:var(--gold); text-align:center; margin-bottom:15px;">🛒 بازارچه تتر</h2>
+            <p id="shop-desc" style="font-size:0.8rem; color:var(--secondary-text); margin-bottom:15px; text-align:center;">خرید مستقیم پک‌های جان روی شبکه تتر TRC20</p>
 
             <div class="shop-item">
-                <span>❤️ ۲۰ جان اضافی</span>
-                <button class="buy-btn" onclick="initiatePurchase('2', '20 جان')">۲ تتر</button>
+                <span id="item-20-hearts">❤️ ۲۰ جان اضافی</span>
+                <button class="buy-btn" onclick="selectPack('2', '20 جان')">۲ تتر</button>
             </div>
             <div class="shop-item">
-                <span>❤️ ۵۰ جان اضافی</span>
-                <button class="buy-btn" onclick="initiatePurchase('4', '50 جان')">۴ تتر</button>
+                <span id="item-50-hearts">❤️ ۵۰ جان اضافی</span>
+                <button class="buy-btn" onclick="selectPack('4', '50 جان')">۴ تتر</button>
             </div>
             <div class="shop-item">
-                <span>❤️ ۱۰۰ جان اضافی</span>
-                <button class="buy-btn" onclick="initiatePurchase('10', '100 جان')">۱۰ تتر</button>
+                <span id="item-100-hearts">❤️ ۱۰۰ جان اضافی</span>
+                <button class="buy-btn" onclick="selectPack('10', '100 جان')">۱۰ تتر</button>
             </div>
             <div class="shop-item">
-                <span>⚔️ بلیط ورود به مسابقه اصلی</span>
-                <button class="buy-btn" onclick="initiatePurchase('3', 'بلیط مسابقه')">۳ تتر</button>
-            </div>
-            <div class="shop-item">
-                <span>⚡ پک ۴۰۰ جان (ویژه مسابقات)</span>
-                <button class="buy-btn" onclick="initiatePurchase('15', '۴۰۰ جان')">۱۵ تتر</button>
+                <span id="item-ticket">⚔️ بلیط ورود به مسابقه اصلی</span>
+                <button class="buy-btn" onclick="selectPack('3', 'بلیط مسابقه')">۳ تتر</button>
             </div>
 
-            <!-- انتخاب درگاه ایرانی یا خارجی -->
             <div id="payment-gateways" style="display:none; margin-top:20px; border-top:1px solid rgba(255,255,255,0.1); padding-top:15px;">
-                <p style="font-size:0.8rem; text-align:center; margin-bottom:10px;">کشور محل سکونت خود را انتخاب کنید:</p>
+                <p id="region-prompt" style="font-size:0.8rem; text-align:center; margin-bottom:10px;">کشور محل سکونت خود را انتخاب کنید:</p>
                 <div class="region-selector">
                     <button class="region-btn active" id="btn-ir" onclick="switchRegion('IR')">🇮🇷 داخل ایران (بیت‌پین)</button>
                     <button class="region-btn" id="btn-global" onclick="switchRegion('GLOBAL')">🌐 خارج از ایران (TronLink)</button>
                 </div>
             </div>
 
-            <!-- فاکتور پرداخت -->
             <div id="crypto-payment" class="crypto-box" style="display:none;">
-                <h4 style="color:var(--gold); margin-bottom:5px;">💳 فاکتور پرداخت تتر (TRC20)</h4>
+                <h4 id="payment-invoice-title" style="color:var(--gold); margin-bottom:5px;">💳 فاکتور پرداخت تتر (TRC20)</h4>
                 <p style="font-size:0.85rem; margin-bottom:5px;">مبلغ: <strong id="pay-amt" style="color:var(--gold);">0</strong> تتر (USDT)</p>
-                <p style="font-size:0.75rem; color:#8fa0c4; margin-bottom:5px;">برای آیتم: <strong id="pay-item-name" style="color:#fff;"></strong></p>
-                
                 <div id="payment-details-content"></div>
-                
-                <input type="text" id="txid-input" style="width:100%; padding:10px; margin-top:15px; border-radius:6px; border:1px solid #333; back
+                <input type="text" id="txid-input" style="width:100%; padding:10px; margin-top:15px; border-radius:6px; border:1px solid #333; background:#000; color:#fff; text-align:center;" placeholder="کد تراکنش (TxID) را وارد کنید">
+                <button class="btn-action" style="padding:10px; font-size:0.9rem;" onclick="submitTx()">ثبت تراکنش و ارسال به پشتیبان</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال مسابقات -->
+    <div id="competition-overlay" class="fullscreen-overlay">
+        <div class="overlay-box">
+            <button class="close-overlay" onclick="closeView('competition')">✕</button>
+            <h2 id="competition-title" style="color:var(--gold); text-align:center; margin-bottom:15px;">🏆 مسابقه هفتگی تتر</h2>
+            <div id="comp-content" style="text-align:center; font-size:0.85rem; line-height:1.7;"></div>
+        </div>
+    </div>
+
+    <!-- مودال بازی (چالش) -->
+    <div id="game-modal" class="fullscreen-overlay">
+        <div class="overlay-box game-box">
+            <button class="close-overlay" onclick="closeGame()">✕</button>
+            <div class="game-header">
+                <span id="game-stage-title">مأموریت ۱</span>
+                <span>❤️ <b id="game-hearts">5</b></span>
+            </div>
+            <h2 id="challenge-title" style="color:var(--gold); margin:25px 0 10px;">چالش مأموریت</h2>
+            <p id="challenge-description" style="color:var(--secondary-text); line-height:1.8;">برای عبور از مرحله، پاسخ درست را انتخاب کنید.</p>
+            <div id="challenge-options" class="challenge-options"></div>
+            <p id="challenge-result" class="challenge-result"></p>
+        </div>
+    </div>
+
+    <script>
+        const tg = window.Telegram ? window.Telegram.WebApp : null;
+        if(tg) { tg.ready(); tg.expand(); }
+
+        // --- تنظیمات چندزبانه ---
+        const translations = {
+            fa: {
+                welcome: "به گنجینه جهانی خوش آمدید!", username: "نام کاربری", email: "ایمیل (اختیاری)", gender: "جنسیت",
+                male: "مرد", female: "زن", start_game: "شروع بازی", avatar_upload: "آواتار سفارشی (اختیاری)",
+                mission_complete: "مأموریت با موفقیت انجام شد!", next_mission: "مرحله بعدی باز شد.",
+                no_hearts: "جان کافی ندارید! از بازارچه خرید کنید یا منتظر شارژ جان بمانید.",
+                map: "نقشه", competition: "مسابقات هفتگی", shop: "بازارچه",
+                map_title: "فصل ۱: ویرانه‌های فراموش‌شده", mission_active: "مأموریت فعال",
+                complete_missions: "۱۰ مأموریت اول را به پایان رساندید! برای ورود به مسابقات اصلی ثبت‌نام کنید.",
+                register_competition: "ثبت‌نام در مسابقات بزرگ تتر", start_adventure: "شروع ماجراجویی",
+                competition_title: "مسابقه هفتگی تتر", competition_prize: "جایزه نفر اول: ۵۰ تتر واقعی!",
+                competition_entry_fee: "هزینه ورودی: ۳ تتر", pay_and_enter: "پرداخت ۳ تتر و ورود",
+                competition_locked_title: "🔒 مسابقه اصلی قفل است!", competition_locked_desc: "باید ابتدا تمام ۱۰ مأموریت مقدماتی را پشت سر بگذارید تا آمادگی ورود به مسابقات مرگبار هفتگی را کسب کنید.",
+                understood: "فهمیدم", shop_title: "🛒 بازارچه تتر", shop_desc: "خرید مستقیم پک‌های جان روی شبکه تتر TRC20",
+                item_20h: "❤️ ۲۰ جان اضافی", item_50h: "❤️ ۵۰ جان اضافی", item_100h: "❤️ ۱۰۰ جان اضافی",
+                item_ticket: "⚔️ بلیط ورود به مسابقه اصلی", buy: "خرید",
+                region_prompt: "کشور محل سکونت خود را انتخاب کنید:", ir_label: "🇮🇷 داخل ایران (بیت‌پین)",
+                global_label: "🌐 خارج از ایران (TronLink)", pay_invoice: "💳 فاکتور پرداخت تتر (TRC20)",
+                pay_amount: "مبلغ:", pay_usdt: "تتر (USDT)", txid_placeholder: "کد تراکنش (TxID) را وارد کنید",
+                submit_tx: "ثبت تراکنش و ارسال به پشتیبان", game_stage: "مأموریت", game_hearts_header: "جان",
+                challenge_title_prefix: "چالش مأموریت", challenge_desc: "برای عبور از مرحله، پاسخ درست را انتخاب کنید.",
+                correct_answer: "✅ پاسخ درست است! مرحله با موفقیت تکمیل شد.", wrong_answer: "❌ پاسخ اشتباه بود و یک جان کم شد.",
+                qr_code_bitpin: "کپی آدرس کیف پول بیت‌پین", qr_code_tronlink: "کپی آدرس TronLink",
+                tx_submitted_alert: "درخواست تراکنش شما ارسال شد. پس از تایید توسط ادمین در تلگرام، اعمال خواهد شد.",
+                address_copied_alert: "آدرس با موفقیت کپی شد.", txid_invalid_alert: "لطفاً TxID معتبر وارد کنید.",
+                no_internet: "اتصال اینترنت وجود ندارد.", wallet_address_error: "خطا در دریافت آدرس کیف پول."
+            },
+            en: {
+                welcome: "Welcome to World Treasure!", username: "Username", email: "Email (Optional)", gender: "Gender",
+                male: "Male", female: "Female", start_game: "Start Game", avatar_upload: "Custom Avatar (Optional)",
+                mission_complete: "Mission completed successfully!", next_mission: "Next mission unlocked.",
+                no_hearts: "Not enough hearts! Buy from the shop or wait for recharge.",
+                map: "Map", competition: "Weekly Competitions", shop: "Shop",
+                map_title: "Chapter 1: Forgotten Ruins", mission_active: "Active Mission",
+                complete_missions: "You've completed the first 10 missions! Register for the main tournaments.",
+                register_competition: "Register for the Big USDT Tournaments", start_adventure: "Start Adventure",
+                competition_title: "Weekly USDT Tournament", competition_prize: "Grand Prize: 50 USDT!",
+                competition_entry_fee: "Entry Fee: 3 USDT", pay_and_enter: "Pay 3 USDT and Enter",
+                competition_locked_title: "🔒 Main Competition Locked!", competition_locked_desc: "Complete all 10 introductory missions to qualify for the weekly duels.",
+                understood: "Got it", shop_title: "🛒 USDT Shop", shop_desc: "Direct purchase of heart packs via USDT TRC20",
+                item_20h: "❤️ +20 Hearts", item_50h: "❤️ +50 Hearts", item_100h: "❤️ +100 Hearts",
+                item_ticket: "⚔️ Main Tournament Ticket", buy: "Buy",
+                region_prompt: "Select your region:", ir_label: "🇮🇷 Inside Iran (Bitpin)",
+                global_label: "🌐 Outside Iran (TronLink)", pay_invoice: "💳 USDT Payment Invoice (TRC20)",
+                pay_amount: "Amount:", pay_usdt: "USDT", txid_placeholder: "Enter TxID",
+                submit_tx: "Submit Transaction & Notify Admin", game_stage: "Mission", game_hearts_header: "Hearts",
+                challenge_title_prefix: "Mission Challenge", challenge_desc: "Choose the correct answer to proceed.",
+                correct_answer: "✅ Correct! Mission completed.", wrong_answer: "❌ Incorrect! You lost a heart.",
+                qr_code_bitpin: "Copy Bitpin Wallet Address", qr_code_tronlink: "Copy TronLink Wallet Address",
+                tx_submitted_alert: "Your transaction request has been sent. It will be processed after admin verification in Telegram.",
+                address_copied_alert: "Address copied successfully.", txid_invalid_alert: "Please enter a valid TxID.",
+                no_internet: "No internet connection.", wallet_address_error: "Error retrieving wallet address."
+            }
+            // زبان های دیگر را اینجا اضافه کنید
+        };
+
+        let currentLang = "fa"; // زبان پیش‌فرض
+
+        // --- کیف پول‌ها ---
+        const walletGlobal = "TPNARMXa2rTfuigwvXAxKDsfPXQgpshxKY"; // آدرس ترون لینک (TRC20) شما برای کاربران خارج از ایران
+        const walletIR = "TPNARMXa2rTfuigwvXAxKDsfPXQgpshxKY";     // آدرس ولت بیت پین شما برای کاربران داخل ایران (TRC20)
+
+        // --- وضعیت بازی ---
+        let playerStage = 1;
+        let hearts = 5;
+        let coins = 0;
+        let selectedPackPrice = "0";
+        let currentRegion = "IR"; // پیش‌فرض ایران
+        let selectedGender = null;
+
+        // --- لیست چالش‌ها ---
+        const challenges = [
+            { title: "رمز ورودی معبد", description: "کدام گزینه برای باز کردن دروازهٔ باستانی مناسب است؟", options: ["کلید طلایی", "سنگ معمولی", "چوب خشک"], answer: 0 },
+            { title: "عبور از تله‌ها", description: "برای عبور امن، کدام مسیر را انتخاب می‌کنی؟", options: ["مسیر دارای علامت سبز", "مسیر تاریک", "مسیر پر از دود"], answer: 0 },
+            { title: "معمای آینه‌ها", description: "نور باید به کدام شیء تابانده شود؟", options: ["بلور آبی", "دیوار سنگی", "صندوق چوبی"], answer: 0 },
+            { title: "چشمهٔ شفابخش", description: "برای بازیابی انرژی چه کاری انجام می‌دهی؟", options: ["نوشیدن از چشمه", "شکستن چشمه", "ترک کردن معبد"], answer: 0 },
+            { title: "معبر فروریخته", description: "برای عبور از شکاف چه چیزی لازم است؟", options: ["طناب", "مشعل خاموش", "سکه"], answer: 0 },
+            { title: "دروازهٔ مومیایی", description: "دروازه با چه چیزی باز می‌شود؟", options: ["کلید طلایی", "شن", "پارچه"], answer: 0 },
+            { title: "مقبرهٔ طلا", description: "کدام صندوقچه را انتخاب می‌کنی؟", options: ["صندوق دارای نشان خورشید", "صندوق شکسته", "صندوق بدون علامت"], answer: 0 },
