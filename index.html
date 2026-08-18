@@ -4,63 +4,65 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>پادشاهی بازار ایران</title>
+    <!-- کتابخانه EmailJS برای ارسال ایمیل -->
+    <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function(){
+            // در اینجا کلید عمومی خود را از سایت EmailJS جایگزین کنید
+            emailjs.init("YOUR_PUBLIC_KEY");
+        })();
+    </script>
     <style>
         :root { --gold: #d4af37; --dark: #121212; --panel: #1e1e1e; }
-        body { margin: 0; background: var(--dark); color: white; font-family: Tahoma, sans-serif; overflow-x: hidden; }
-        
-        /* Layout */
+        body { margin: 0; background: var(--dark); color: white; font-family: Tahoma, sans-serif; overflow-x: hidden; padding-bottom: 20px; }
         .container { display: grid; grid-template-columns: 1fr; gap: 10px; padding: 10px; }
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gold); padding-bottom: 10px; }
-        
-        /* Hero Section */
-        .hero-box { 
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://via.placeholder.com/400x200'); /* جایگزین با عکس اصلی */
-            background-size: cover; border: 1px solid var(--gold); padding: 20px; text-align: center; border-radius: 10px;
-        }
-        
-        /* Panels */
-        .panel { background: var(--panel); border: 1px solid #333; padding: 15px; border-radius: 10px; }
-        button { background: var(--gold); border: none; padding: 10px 20px; color: black; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 5px; width: 100%; }
-        
-        /* Timer Style */
-        .timer { color: var(--gold); font-size: 1.2em; font-weight: bold; margin: 10px 0; }
-
-        /* Dynasty Scroll */
+        .hero-box { background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), #000; border: 1px solid var(--gold); padding: 20px; text-align: center; border-radius: 10px; }
+        .panel { background: var(--panel); border: 1px solid #333; padding: 15px; border-radius: 10px; margin-top: 10px; }
+        button { background: var(--gold); border: none; padding: 12px; color: black; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 10px; width: 100%; }
+        input { width: 100%; padding: 10px; margin-top: 5px; background: #333; border: 1px solid var(--gold); color: white; border-radius: 5px; box-sizing: border-box; }
+        .timer { color: var(--gold); font-size: 1.2em; font-weight: bold; margin: 10px 0; text-align: center; }
         .scroll-container { display: flex; overflow-x: auto; gap: 10px; padding: 10px 0; }
-        .dynasty-card { min-width: 120px; height: 150px; background: #333; border-radius: 8px; text-align: center; }
+        .dynasty-card { min-width: 100px; height: 120px; background: #333; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--gold); }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- Header -->
+    <!-- هدر -->
     <div class="header">
-        <div>کاربر: پادشاه</div>
-        <div>سکه: <span id="coins">۴۲۰</span></div>
+        <div>پادشاه: بازیکن ۹۷</div>
+        <div>سکه: ۴۲۰</div>
     </div>
 
-    <!-- Main Cinematic Section -->
+    <!-- بخش قهرمان -->
     <div class="hero-box">
         <h1>پادشاهی بازار ایران</h1>
         <p>سفر تو، تاریخ را می‌سازد</p>
-        <button onclick="enterMarket()">ورود به بازار</button>
-        <button onclick="startBattle()" style="background:#8b0000; color:white;">میدان جنگ (۷۲ ساعته)</button>
     </div>
 
-    <!-- Battle & Missions -->
+    <!-- پنل احراز هویت (OTP) -->
     <div class="panel">
-        <h3>میدان نبرد و رتبه‌بندی</h3>
-        <div class="timer" id="battleTimer">زمان باقی‌مانده: ۷۲:۰۰:۰۰</div>
-        <div id="leaderboard">۱. نام شما (امتیاز: ۸۵۰) - در حال نبرد...</div>
+        <h3>ورود به پادشاهی</h3>
+        <input type="email" id="userEmail" placeholder="ایمیل خود را وارد کنید">
+        <button onclick="sendOTP()">ارسال کد تأیید</button>
     </div>
 
+    <!-- میدان جنگ -->
+    <div class="panel">
+        <h3>میدان نبرد (۷۲ ساعته)</h3>
+        <div class="timer" id="battleTimer">زمان: ۷۲:۰۰:۰۰</div>
+        <button style="background:#8b0000; color:white;" onclick="startBattle()">شروع نبرد</button>
+    </div>
+
+    <!-- مأموریت‌ها -->
     <div class="panel">
         <h3>مأموریت‌های نامحدود</h3>
         <p id="missionText">تلاش برای فتح بازار...</p>
         <button onclick="generateMission()">دریافت مأموریت جدید</button>
     </div>
 
-    <!-- Dynasties -->
+    <!-- لیست سلسله‌ها -->
     <div class="scroll-container">
         <div class="dynasty-card">مادها</div>
         <div class="dynasty-card">هخامنشیان</div>
@@ -70,7 +72,7 @@
 </div>
 
 <script>
-    // Battle Timer (72 hours)
+    // سیستم تایمر ۷۲ ساعته
     let time = 72 * 60 * 60;
     setInterval(() => {
         time--;
@@ -80,15 +82,34 @@
         document.getElementById('battleTimer').innerText = `زمان باقی‌مانده: ${h}:${m}:${s}`;
     }, 1000);
 
-    // Infinite Missions
+    // تولید مأموریت تصادفی
     function generateMission() {
-        const missions = ["فتح راه ابریشم", "تجارت فیل جنگی", "ساخت ارابه داس‌دار", "مذاکره با ساتراپ‌ها"];
+        const missions = ["فتح راه ابریشم", "تجارت فیل جنگی", "ساخت ارابه داس‌دار", "مذاکره با ساتراپ‌ها", "گشت‌زنی در بازار"];
         document.getElementById('missionText').innerText = missions[Math.floor(Math.random() * missions.length)];
     }
 
-    // Logic Placeholder
-    function enterMarket() { alert("در حال ورود به بازار..."); }
-    function startBattle() { alert("شما وارد میدان جنگ شدید. نبرد تا ۷۲ ساعت ادامه دارد."); }
+    // تابع ارسال ایمیل (OTP)
+    function sendOTP() {
+        const email = document.getElementById("userEmail").value;
+        if (!email) { alert("لطفاً ایمیل را وارد کنید"); return; }
+        
+        const generatedCode = Math.floor(1000 + Math.random() * 9000);
+        
+        const templateParams = {
+            to_email: email,
+            message: "کد ورود شما: " + generatedCode
+        };
+
+        // جایگزین کنید با IDهای خودتان
+        emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams)
+            .then(function(response) {
+                alert("کد تأیید به ایمیل ارسال شد!");
+            }, function(error) {
+                alert("خطا در ارسال: " + JSON.stringify(error));
+            });
+    }
+
+    function startBattle() { alert("شما وارد میدان جنگ شدید."); }
 </script>
 
 </body>
