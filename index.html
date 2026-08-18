@@ -3,17 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>پادشاهی بازار ایران</title>
+  <title>شاهنشاهی بازار ایران</title>
   <style>
     :root {
-      --bg: #0b0f19;
-      --card: #151b26;
-      --border: #262f40;
+      --bg: #0a0e17;
+      --card: #131b2a;
+      --card-inner: #0b111c;
+      --border: #233148;
       --gold: #ffb703;
-      --green: #2ec4b6;
-      --red: #e71d36;
-      --text: #ffffff;
-      --muted: #a0aec0;
+      --gold-dark: #b8860b;
+      --green: #06d6a0;
+      --red: #ef476f;
+      --cyan: #118ab2;
+      --text: #f8f9fa;
+      --muted: #8d99ae;
     }
     * {
       box-sizing: border-box;
@@ -26,7 +29,7 @@
     body {
       background: var(--bg);
       color: var(--text);
-      padding: 12px;
+      padding: 10px;
       display: flex;
       justify-content: center;
     }
@@ -36,53 +39,57 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
+      padding-bottom: 30px;
     }
     .header-box {
-      background: var(--card);
+      background: linear-gradient(180deg, #1b263b 0%, #0d1b2a 100%);
       border: 2px solid var(--gold);
       border-radius: 14px;
       padding: 14px;
       text-align: center;
+      box-shadow: 0 4px 15px rgba(255, 183, 3, 0.15);
     }
     .header-box h1 {
       font-size: 19px;
       color: var(--gold);
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
-    .stats-row {
+    .stats-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px;
       margin-top: 10px;
     }
     .stat-item {
-      background: rgba(0,0,0,0.35);
+      background: rgba(0,0,0,0.4);
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 8px;
+      border-radius: 8px;
+      padding: 6px;
       text-align: center;
     }
-    .stat-lbl { font-size: 11px; color: var(--muted); }
-    .stat-val { font-size: 17px; font-weight: bold; margin-top: 2px; }
+    .stat-lbl { font-size: 10px; color: var(--muted); }
+    .stat-val { font-size: 14px; font-weight: bold; margin-top: 2px; }
 
     .card {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 14px;
+      border-radius: 12px;
+      padding: 12px;
     }
     .card-head {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: bold;
       color: var(--gold);
       margin-bottom: 10px;
       border-bottom: 1px solid var(--border);
       padding-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
-
     select, input {
       width: 100%;
-      background: #080c14;
+      background: var(--card-inner);
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 10px;
@@ -91,66 +98,63 @@
       margin-bottom: 8px;
       outline: none;
     }
-    select:focus, input:focus { border-color: var(--gold); }
-
+    select:focus, input:focus  border-color: var(--gold); }
     .btn {
       width: 100%;
       background: var(--gold);
       color: #000;
       border: none;
       border-radius: 8px;
-      padding: 11px;
-      font-size: 14px;
+      padding: 10px;
+      font-size: 13px;
       font-weight: bold;
       cursor: pointer;
       touch-action: manipulation;
     }
     .btn:active { transform: scale(0.98); opacity: 0.9; }
-    .btn-red { background: var(--red); color: #fff; }
     .btn-green { background: var(--green); color: #000; }
+    .btn-red { background: var(--red); color: #fff; }
+    .btn-outline { background: transparent; border: 1px solid var(--gold); color: var(--gold); }
+    .btn-tether { background: #26a17b; color: #fff; }
 
-    .balloon-area {
-      position: relative;
-      height: 140px;
-      background: radial-gradient(circle, #1a233a 0%, #0b0f19 100%);
-      border: 1px dashed var(--gold);
-      border-radius: 10px;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .live-feed {
+      height: 65px;
+      overflow-y: hidden;
+      background: var(--card-inner);
+      border-radius: 6px;
+      padding: 6px;
+      font-size: 11px;
+      color: var(--muted);
+      border-right: 3px solid var(--green);
     }
-    .balloon {
-      position: absolute;
-      font-size: 38px;
-      cursor: pointer;
-      animation: floatUp 4s infinite linear;
-    }
-    @keyframes floatUp {
-      0% { transform: translateY(50px) scale(0.9); }
-      50% { transform: translateY(-20px) scale(1.1); }
-      100% { transform: translateY(50px) scale(0.9); }
-    }
-
-    .chat-box {
-      height: 110px;
-      overflow-y: auto;
-      background: #080c14;
-      border-radius: 8px;
-      padding: 8px;
-      font-size: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-      margin-bottom: 8px;
-    }
-    .chat-msg { background: rgba(255,255,255,0.05); padding: 4px 6px; border-radius: 4px; }
-    .market-row {
+    .market-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 8px 0;
       border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .badge {
+      background: rgba(255, 183, 3, 0.15);
+      color: var(--gold);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+    }
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e293b;
+      border: 1px solid var(--gold);
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 20px;
+      font-size: 13px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.8);
+      z-index: 1000;
+      display: none;
     }
     .hidden { display: none !important; }
   </style>
@@ -159,237 +163,25 @@
 
 <div class="container">
 
-  <!-- هدر و وضعیت -->
+  <!-- هدر اصلی و وضعیت خزانه -->
   <div class="header-box">
-    <h1>⚔️ پادشاهی بازار ایران ⚔️</h1>
-    <div class="stats-row">
+    <h1>⚔️ شاهنشاهی بازار ایران ⚔️</h1>
+    <div class="stats-grid">
       <div class="stat-item">
-        <div class="stat-lbl">💰 امتیاز (خزانه)</div>
+        <div class="stat-lbl">💰 سکه و امتیاز</div>
         <div class="stat-val" id="pointsVal" style="color:var(--gold);">۱,۰۰۰</div>
       </div>
       <div class="stat-item">
-        <div class="stat-lbl">❤️ جان باقی‌مانده</div>
-        <div class="stat-val" id="livesVal" style="color:var(--red);">۵</div>
+        <div class="stat-lbl">🍞 آذوقه مایحتاج</div>
+        <div class="stat-val" id="suppliesVal" style="color:var(--green);">۱۰۰٪</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-lbl">🛡️ قبیله</div>
+        <div class="stat-val" id="clanVal" style="color:var(--cyan); font-size:11px;">بی‌قبیله</div>
       </div>
     </div>
   </div>
 
-  <!-- فرم ثبت نام با نام‌های باستانی یکتا -->
-  <div class="card" id="regCard">
-    <div class="card-head">👑 انتخاب نام پادشاه و سلسله باستانی</div>
-    <label style="font-size: 11px; color: var(--muted);">فرمانروا (اسامی قابل انتخاب):</label>
-    <select id="kingSelect"></select>
-
-    <label style="font-size: 11px; color: var(--muted);">سلسله / پادشاهی:</label>
-    <select id="dynastySelect"></select>
-
-    <button class="btn" id="startBtn" onclick="registerPlayer()">تأیید و تشکیل قلمرو</button>
-  </div>
-
-  <!-- وضعیت هویت بازیکن -->
-  <div class="card hidden" id="playerProfile">
-    <div style="display:flex; justify-content:space-between; font-size:13px;">
-      <span>فرمانروا: <b id="lblKing" style="color:var(--gold)"></b></span>
-      <span>سلسله: <b id="lblDynasty"></b></span>
-    </div>
-  </div>
-
-  <!-- بالن شانس کمکی -->
-  <div class="card">
-    <div class="card-head">🎈 بالن شانس کاروان (دریافت سکه و امتیاز کمکی)</div>
-    <div class="balloon-area" onclick="popBalloon()">
-      <div class="balloon" id="balloonTarget">🎈</div>
-      <span id="balloonText" style="position: absolute; bottom: 8px; font-size: 11px; color: var(--muted);">روی بالن بزنید تا جایزه بگیرید!</span>
-    </div>
-  </div>
-
-  <!-- نبرد قبایل -->
-  <div class="card">
-    <div class="card-head">🛡️ نبرد قبایل و کشورگشایی</div>
-    <p style="font-size: 11px; color: var(--muted); margin-bottom: 10px;">برد: ۳۰۰+ امتیاز | باخت: ۵۰- امتیاز و کسر ۱ جان</p>
-    <button class="btn btn-red" id="battleBtn" onclick="runBattle()">شروع حمله فوری</button>
-  </div>
-
-  <!-- اتحاد قبیله و چت و کمک جان -->
-  <div class="card">
-    <div class="card-head">🏰 تالار گفت‌وگو و اتحاد قبیله</div>
-    <div class="chat-box" id="chatBox">
-      <div class="chat-msg"><b>پیک شاهی:</b> تالار گفتمان قبیله آماده است.</div>
-    </div>
-    <div style="display: flex; gap: 6px; margin-bottom: 8px;">
-      <input type="text" id="chatInput" placeholder="پیام به هم‌پیمانان..." style="margin-bottom:0;">
-      <button class="btn btn-green" style="width: 70px; padding: 0;" onclick="sendChatMessage()">ارسال</button>
-    </div>
-    <button class="btn" style="background: rgba(255,255,255,0.1); color:#fff; font-size: 12px;" onclick="sendHelpLife()">🎁 ارسال ۱ جان کمکی به هم‌تیمی (<span id="giftCount">۵</span> مانده امروز)</button>
-  </div>
-
-  <!-- بازار -->
-  <div class="card">
-    <div class="card-head">🐫 کاروانسرای تجهیزات</div>
-    <div class="market-row">
-      <div><b>اسب اصیل پارسی</b><br><small style="color:var(--gold)">۱۵۰ امتیاز</small></div>
-      <button class="btn btn-green" style="width: auto; padding: 6px 12px;" onclick="buyItem('اسب اصیل پارسی', 150)">خرید</button>
-    </div>
-    <div class="market-row">
-      <div><b>شمشیر هخامنشی</b><br><small style="color:var(--gold)">۱۰۰ امتیاز</small></div>
-      <button class="btn btn-green" style="width: auto; padding: 6px 12px;" onclick="buyItem('شمشیر هخامنشی', 100)">خرید</button>
-    </div>
-  </div>
-
-</div>
-
-<script>
-  const AVAILABLE_KINGS = ["کوروش بزرگ", "داریوش بزرگ", "خشایارشا", "رستم دستان", "مهرداد اشکانی", "شاپور ساسانی", "آریوبرزن", "سورنا"];
-  const AVAILABLE_DYNASTIES = ["هخامنشیان", "اشکانیان", "ساسانیان", "مادها", "عیلامیان", "طاهریان"];
-
-  let state = {
-    points: 1000,
-    lives: 5,
-    king: '',
-    dynasty: '',
-    dailyGifts: 5,
-    takenKings: []
-  };
-
-  function init() {
-    const saved = localStorage.getItem('bazaar_iran_save_v4');
-    if (saved) {
-      state = Object.assign(state, JSON.parse(saved));
-    }
-    renderSelects();
-    updateUI();
-  }
-
-  function save() {
-    localStorage.setItem('bazaar_iran_save_v4', JSON.stringify(state));
-    updateUI();
-  }
-
-  function renderSelects() {
-    const kingSel = document.getElementById('kingSelect');
-    const dynSel = document.getElementById('dynastySelect');
-    kingSel.innerHTML = '';
-    dynSel.innerHTML = '';
-
-    AVAILABLE_KINGS.filter(k => !state.takenKings.includes(k) || k === state.king).forEach(k => {
-      let opt = document.createElement('option');
-      opt.value = k;
-      opt.innerText = k;
-      kingSel.appendChild(opt);
-    });
-
-    AVAILABLE_DYNASTIES.forEach(d => {
-      let opt = document.createElement('option');
-      opt.value = d;
-      opt.innerText = d;
-      dynSel.appendChild(opt);
-    });
-  }
-
-  function updateUI() {
-    document.getElementById('pointsVal').innerText = Number(state.points).toLocaleString('fa-IR');
-    document.getElementById('livesVal').innerText = state.lives;
-    document.getElementById('giftCount').innerText = state.dailyGifts;
-
-    if (state.king) {
-      document.getElementById('regCard').classList.add('hidden');
-      document.getElementById('playerProfile').classList.remove('hidden');
-      document.getElementById('lblKing').innerText = state.king;
-      document.getElementById('lblDynasty').innerText = state.dynasty;
-    }
-  }
-
-  function registerPlayer() {
-    const k = document.getElementById('kingSelect').value;
-    const d = document.getElementById('dynastySelect').value;
-    if (!k || !d) return;
-
-    state.king = k;
-    state.dynasty = d;
-    if (!state.takenKings.includes(k)) state.takenKings.push(k);
-    save();
-  }
-
-  function runBattle() {
-    if (state.lives <= 0) {
-      alert('⚠️ جان شما به پایان رسیده است! از بالن جایزه بگیرید یا از هم‌تیمی‌ها کمک بخواهید.');
-      return;
-    }
-    const win = Math.random() > 0.45;
-    if (win) {
-      state.points += 300;
-      alert('⚔️ پیروزی دلاورانه! ۳۰۰+ امتیاز غنیمت گرفتید.');
-    } else {
-      state.points = Math.max(0, state.points - 50);
-      state.lives -= 1;
-      alert('💀 شکست در نبرد! ۵۰- امتیاز و ۱ جان کسر شد.');
-    }
-    save();
-  }
-
-  function popBalloon() {
-    const b = document.getElementById('balloonTarget');
-    b.style.transform = 'scale(1.4)';
-    setTimeout(() => { b.style.transform = 'scale(1)'; }, 200);
-
-    const bonus = Math.floor(Math.random() * 80) + 20;
-    state.points += bonus;
-    if (Math.random() > 0.7 && state.lives < 5) {
-      state.lives += 1;
-      alert(`🎈 بالن ترکید! ${bonus} امتیاز + ۱ جان هدیه گرفتید!`);
-    } else {
-      alert(`🎈 بالن ترکید! ${bonus} امتیاز کمکی دریافت کردید.`);
-    }
-    save();
-  }
-
-  function sendChatMessage() {
-    const input = document.getElementById('chatInput');
-    const msg = input.value.trim();
-    if (!msg) return;
-
-    const chatBox = document.getElementById('chatBox');
-    const row = document.createElement('div');
-    row.className = 'chat-msg';
-    row.innerHTML = `<b>${state.king || 'فرمانروا'}:</b> ${msg}`;
-    chatBox.appendChild(row);
-    chatBox.scrollTop = chatBox.scrollHeight;
-    input.value = '';
-  }
-
-  function sendHelpLife() {
-    if (state.dailyGifts <= 0) {
-      alert('❌ سقف مجاز اهدای جان در امروز (۵ جان) به پایان رسیده است.');
-      return;
-    }
-    if (state.lives <= 1) {
-      alert('❌ جان شما برای اهدا کافی نیست!');
-      return;
-    }
-    state.lives -= 1;
-    state.dailyGifts -= 1;
-    save();
-
-    const chatBox = document.getElementById('chatBox');
-    const row = document.createElement('div');
-    row.className = 'chat-msg';
-    row.style.color = 'var(--green)';
-    row.innerHTML = `🎁 <b>${state.king}:</b> ۱ جان به هم‌پیمانان اهدا کرد.`;
-    chatBox.appendChild(row);
-    chatBox.scrollTop = chatBox.scrollHeight;
-  }
-
-  function buyItem(name, price) {
-    if (state.points < price) {
-      alert('❌ امتیاز کافی نیست.');
-      return;
-    }
-    state.points -= price;
-    alert(`خرید ${name} انجام شد.`);
-    save();
-  }
-
-  window.onload = init;
-</script>
-</body>
-</html>
+  <!-- بخش ورود و ارسال کد تأیید ایمیل -->
+  <div class="card" id="authCard">
+    <div class="card-head">🔐
