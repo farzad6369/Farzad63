@@ -9,7 +9,10 @@
       --bg: #06090f;
       --card: #0f1624;
       --card-alt: #162032;
+      --market-bg: #1c150c;
+      --market-card: #281e12;
       --border: #28374f;
+      --border-market: #855a1b;
       --gold: #ffb703;
       --gold-dark: #b8860b;
       --green: #06d6a0;
@@ -26,6 +29,7 @@
       -webkit-tap-highlight-color: transparent;
       user-select: none;
     }
+    html { scroll-behavior: smooth; }
     body {
       background: radial-gradient(circle at 50% 0%, #111a2e 0%, var(--bg) 100%);
       color: var(--text);
@@ -39,10 +43,10 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
-      padding-bottom: 40px;
+      padding-bottom: 50px;
     }
     
-    /* سربرگ حماسی و شاهانه */
+    /* سربرگ حماسی */
     .header-box {
       background: linear-gradient(180deg, #182338 0%, #0c121e 100%);
       border: 2px solid var(--gold);
@@ -51,7 +55,7 @@
       text-align: center;
       box-shadow: 0 4px 20px rgba(255, 183, 3, 0.2);
     }
-    .header-box h1 { font-size: 18px; color: var(--gold); margin-bottom: 6px; letter-spacing: 1px; }
+    .header-box h1 { font-size: 18px; color: var(--gold); margin-bottom: 6px; }
     
     .stats-grid {
       display: grid;
@@ -68,6 +72,14 @@
     }
     .stat-lbl { font-size: 10px; color: var(--muted); }
     .stat-val { font-size: 14px; font-weight: bold; margin-top: 2px; }
+
+    /* دکمه‌های ناوبری سریع بین بازار و نبرد */
+    .nav-bar {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 4px;
+    }
 
     .card {
       background: var(--card);
@@ -119,16 +131,60 @@
     .btn-red { background: linear-gradient(180deg, #ff5c83 0%, #c9184a 100%); color: #fff; }
     .btn-blue { background: linear-gradient(180deg, #1fb3e5 0%, #0d6e8a 100%); color: #fff; }
     .btn-outline { background: transparent; border: 1px solid var(--border); color: #fff; }
+    .btn-market-nav { background: linear-gradient(180deg, #e09f3e 0%, #9e2a2b 100%); color: #fff; }
+
+    /* ================= طراحی باستانی راسته بازار بزرگ ================= */
+    .market-box-ancient {
+      background: var(--market-bg);
+      border: 2px solid var(--border-market);
+      border-radius: 14px;
+      padding: 12px;
+      box-shadow: 0 0 25px rgba(255, 183, 3, 0.15);
+      position: relative;
+    }
+    .caravan-strip {
+      background: #120c05;
+      border-radius: 6px;
+      padding: 6px;
+      margin-bottom: 8px;
+      overflow: hidden;
+      white-space: nowrap;
+      border: 1px dashed var(--border-market);
+    }
+    .caravan-anim {
+      display: inline-block;
+      animation: caravanMove 18s linear infinite;
+      font-size: 12px;
+      color: #ffd166;
+    }
+
+    .stall-list { display: flex; flex-direction: column; gap: 8px; }
+    .stall-item {
+      background: var(--market-card);
+      border: 1px solid #4a341b;
+      border-radius: 8px;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .stock-badge {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(0,0,0,0.6);
+      display: inline-block;
+      margin-top: 3px;
+    }
 
     /* ================= میدان نبرد سینمایی و حماسی ================= */
     .battle-theater {
       background: linear-gradient(180deg, #1f0d0d 0%, #110505 50%, #2b110a 100%);
       border: 2px solid #8b2525;
-      border-radius: 12px;
-      padding: 10px;
+      border-radius: 14px;
+      padding: 12px;
       position: relative;
       overflow: hidden;
-      margin-bottom: 10px;
     }
     .battlefield-arena {
       height: 120px;
@@ -142,30 +198,11 @@
       justify-content: space-between;
       padding: 0 10px;
     }
-    
-    /* کاروان متحرک در راسته بازار */
-    .caravan-strip {
-      background: #080c14;
-      border-radius: 6px;
-      padding: 6px;
-      margin-bottom: 8px;
-      overflow: hidden;
-      white-space: nowrap;
-      position: relative;
-      border: 1px solid var(--border);
-    }
-    .caravan-anim {
-      display: inline-block;
-      animation: caravanMove 16s linear infinite;
-      font-size: 13px;
-    }
 
-    /* واحدهای نظامی متحرک */
     .army-unit {
       font-size: 26px;
       display: inline-block;
       filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
-      transition: transform 0.4s ease;
     }
     .unit-left { animation: marchRight 2.2s infinite alternate ease-in-out; }
     .unit-right { animation: marchLeft 2.2s infinite alternate ease-in-out; transform: scaleX(-1); }
@@ -185,7 +222,7 @@
       animation: launchCatapult 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
     }
 
-    /* بالن کلاسیک سینمایی */
+    /* بالن کلاسیک سینمایی ۲۴ ساعته */
     .sky-stage {
       height: 120px;
       background: linear-gradient(180deg, #0d1b2a 0%, #1b263b 60%, #36495f 100%);
@@ -249,17 +286,6 @@
     }
     .feed-item { animation: fadeIn 0.4s ease-in; color: #cbd5e1; }
 
-    .market-list { display: flex; flex-direction: column; gap: 6px; }
-    .market-item {
-      background: var(--card-alt);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 8px 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
     .tactics-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -288,8 +314,8 @@
     .hidden { display: none !important; }
 
     @keyframes caravanMove {
-      0% { transform: translateX(120%); }
-      100% { transform: translateX(-120%); }
+      0% { transform: translateX(110%); }
+      100% { transform: translateX(-110%); }
     }
     @keyframes marchRight {
       0% { transform: translateX(0) translateY(0); }
@@ -351,7 +377,7 @@
     </div>
   </div>
 
-  <!-- مرحله ۲: بلافاصله بعد از ایمیل: ۵۰ نام باستانی و سلسله‌ها -->
+  <!-- مرحله ۲: ۵۰ نام باستانی و سلسله‌ها -->
   <div class="card hidden" id="regCard">
     <div class="card-head">👑 مرحله دوم: گزینش هویت و تاسیس سلسله</div>
     
@@ -370,9 +396,15 @@
     <button class="btn btn-green" onclick="completeRegistration()">تاسیس رسمی قلمرو و ورود به بازار بزرگ 🏛️</button>
   </div>
 
-  <!-- محیط بازی اصلی (پس از احراز هویت باز می‌شود) -->
+  <!-- محیط بازی اصلی -->
   <div id="gamePlaySection" class="hidden" style="display:flex; flex-direction:column; gap:12px;">
     
+    <!-- نوار ناوبری سریع -->
+    <div class="nav-bar">
+      <button class="btn btn-market-nav" onclick="scrollToSection('bazaarSection')">🕌 ورود به راسته بازار</button>
+      <button class="btn btn-red" onclick="scrollToSection('battleSection')">⚔️ رفتن به میدان نبرد</button>
+    </div>
+
     <!-- کارت هویت فعال بازیکن -->
     <div class="card" style="padding:8px 12px;">
       <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px;">
@@ -382,89 +414,98 @@
       </div>
     </div>
 
-    <!-- قطب اصلی بازی: راسته بازار بزرگ و کاروان‌های زنده -->
-    <div class="card" style="border: 2px solid #b8860b;">
-      <div class="card-head">
-        <span>🕌 راستهٔ بازار بزرگ ری، تبریز و تیسفون (قطب اصلی)</span>
-        <span style="font-size: 10px; color:var(--green)">● کاروان‌های زنده</span>
+    <!-- ================= کانون اصلی: راسته بازار بزرگ باستانی ================= -->
+    <div class="market-box-ancient" id="bazaarSection">
+      <div class="card-head" style="border-bottom: 1px solid var(--border-market);">
+        <span style="color:var(--gold)">🕌 راستهٔ بازار بزرگ و بارانداز کاروانسرا</span>
+        <button class="btn btn-outline" style="width:auto; padding:3px 8px; font-size:10px;" onclick="restockCaravan()">🔄 تجدید بار</button>
       </div>
       
-      <!-- انیمیشن کاروان تجاری -->
+      <!-- انیمیشن جاده ابریشم -->
       <div class="caravan-strip">
         <div class="caravan-anim">
-          🐫 🐫 🐫 <b>کاروان جاده ابریشم نیشابور</b> بار زعفران و ابریشم را وارد بارانداز کرد... 🐎 🌾
+          🐫 🏺 🌾 کاروان جاده ابریشم نیشابور و ری بارانداز شد | صرافان طلا و تتر آماده دادوستد... 🐎 ⚔️
         </div>
       </div>
 
       <!-- فید زنده دادوستد بازرگانان -->
-      <div class="live-feed" id="marketFeed">
+      <div class="live-feed" id="marketFeed" style="background:#150d06; border-color:#5c3e17;">
         <div class="feed-item">🛒 صراف اصفهانی ۵ تتر شمشیر دمشقی معامله کرد.</div>
         <div class="feed-item">🌾 کاروان خوزستان ۶۰ جوال گندم و جو فروخت.</div>
       </div>
 
-      <!-- اقلام بازارچه -->
-      <div class="market-list">
-        <div class="market-item">
+      <!-- حجره‌های بازار با سیستم موجودی و قیمت پویا -->
+      <div class="stall-list">
+        
+        <!-- حجره آذوقه -->
+        <div class="stall-item">
           <div>
             <b>🍞 جو، نان و مشک آب کاروان</b>
             <div style="font-size:10px; color:var(--muted)">تغذیه لشکر (+۳۵٪ آذوقه)</div>
+            <span class="stock-badge" id="stockFoodBadge" style="color:var(--green)">موجودی حجره: ۸ کیسه</span>
           </div>
-          <button class="btn btn-green" style="width:auto; padding:6px 12px;" onclick="buyGoods('food', 70)">۷۰ سکه</button>
+          <button class="btn btn-green" style="width:auto; padding:6px 12px;" id="btnBuyFood" onclick="buyGoods('food')">۷۰ سکه</button>
         </div>
 
-        <div class="market-item">
+        <!-- حجره فیل جنگی -->
+        <div class="stall-item">
           <div>
             <b>🐘 زره و کجاوه‌ساز فیل جنگی</b>
             <div style="font-size:10px; color:var(--muted)">افزایش توان هجومی (+۲۵ قدرت)</div>
+            <span class="stock-badge" id="stockElephantBadge" style="color:var(--gold)">موجودی: ۳ راس</span>
           </div>
-          <button class="btn btn-green" style="width:auto; padding:6px 12px;" onclick="buyGoods('elephant_armor', 220)">۲۲۰ سکه</button>
+          <button class="btn btn-green" style="width:auto; padding:6px 12px;" id="btnBuyElephant" onclick="buyGoods('elephant')">۲۲۰ سکه</button>
         </div>
 
-        <div class="market-item">
+        <!-- حجره منجنیق -->
+        <div class="stall-item">
           <div>
             <b>☄️ سنگ‌تراشی و الوار منجنیق</b>
-            <div style="font-size:10px; color:var(--muted)">تجهیز ادوات محاصره (+۳۰ قدرت)</div>
+            <div style="font-size:10px; color:var(--muted)">ادوات محاصره دژ (+۳۰ قدرت)</div>
+            <span class="stock-badge" id="stockCatapultBadge" style="color:var(--blue)">موجودی: ۲ دستگاه</span>
           </div>
-          <button class="btn btn-green" style="width:auto; padding:6px 12px;" onclick="buyGoods('catapult_parts', 280)">۲۸۰ سکه</button>
+          <button class="btn btn-green" style="width:auto; padding:6px 12px;" id="btnBuyCatapult" onclick="buyGoods('catapult')">۲۸۰ سکه</button>
         </div>
 
-        <div class="market-item" style="border:1px solid var(--gold);">
+        <!-- صرافی تتر -->
+        <div class="stall-item" style="border:1px solid var(--gold);">
           <div>
-            <b style="color:var(--gold)">💎 کیسه خزانه‌داری (شارژ تتر)</b>
+            <b style="color:var(--gold)">💎 صرافی خزانه‌داری (خرید با تتر)</b>
             <div style="font-size:10px; color:var(--muted)">شارژ آنی ۲۰۰۰ سکه شاهی (TRC20)</div>
+            <span class="stock-badge" style="color:#fff;">نامحدود ♾️</span>
           </div>
           <button class="btn" style="width:auto; padding:6px 12px;" onclick="payWithTether()">۱ USDT</button>
         </div>
+
       </div>
     </div>
 
-    <!-- صحنه سینمایی میدان نبرد با منجنیق، فیل و ارابه‌ها -->
-    <div class="battle-theater">
+    <!-- ================= صحنه نبرد سینمایی ================= -->
+    <div class="battle-theater" id="battleSection">
       <div class="card-head" style="border-bottom:1px solid #742a2a;">
         <span style="color:#ff6b6b;">⚔️ صحنه نبرد سینمایی باستان</span>
         <span style="font-size:10px; color:var(--gold);">برد: ۳۰۰+ | باخت: ۵۰-</span>
       </div>
 
       <!-- زمین نبرد گرافیکی و متحرک -->
-      <div class="battlefield-arena" id="battleArena">
+      <div class="battlefield-arena">
         <div id="catapultRock" class="catapult-rock"></div>
         
         <!-- جناح لشکر خودی -->
         <div style="display:flex; align-items:center; gap:4px;">
-          <div class="army-unit unit-left" title="منجنیق محاصره">☄️</div>
+          <div class="army-unit unit-left" title="منجنیق">☄️</div>
           <div class="army-unit unit-left" title="فیل جنگی ساسانی">🐘</div>
-          <div class="army-unit unit-left" title="ارابه داس‌دار هخامنشی">🐎</div>
-          <div class="army-unit unit-left" title="پیاده‌نظام نیزه‌دار">🛡️</div>
+          <div class="army-unit unit-left" title="ارابه داس‌دار">🐎</div>
+          <div class="army-unit unit-left" title="پیاده‌نظام">🛡️</div>
         </div>
 
-        <!-- مرز درگیری و پرچم -->
         <div style="font-size:20px; animation:fadeIn 1s infinite alternate;">🚩</div>
 
         <!-- جناح لشکر دشمن -->
         <div style="display:flex; align-items:center; gap:4px;">
-          <div class="army-unit unit-right" title="قلعه و سپاه متخاصم">🏰</div>
-          <div class="army-unit unit-right" title="سربازان رومی/مهاجم">⚔️</div>
-          <div class="army-unit unit-right" title="کمانداران دشمن">🏹</div>
+          <div class="army-unit unit-right" title="دژ متخاصم">🏰</div>
+          <div class="army-unit unit-right" title="مهاجمان">⚔️</div>
+          <div class="army-unit unit-right" title="کمانداران">🏹</div>
         </div>
       </div>
 
@@ -477,7 +518,7 @@
       </div>
     </div>
 
-    <!-- مینی‌گیم بالن کلاسیک هوای گرم (جایزه روزانه ۲۴ ساعته) -->
+    <!-- مینی‌گیم بالن کلاسیک هوای گرم (۲۴ ساعته) -->
     <div class="card">
       <div class="card-head">
         <span>🎈 بالن هوای گرم جهانگردان (پاداش ۲۴ ساعته)</span>
@@ -514,7 +555,7 @@
 </div>
 
 <script>
-  // ۵۰ نام اصیل تاریخی زنان و مردان
+  // ۵۰ نام اصیل تاریخی
   const NAMES_MALE = [
     "کوروش بزرگ", "داریوش بزرگ", "خشایارشا", "اردشیر بابکان", "شاپور ساسانی",
     "مهرداد اشکانی", "آریوبرزن", "سورنا", "انوشیروان دادگر", "بهرام گور",
@@ -547,13 +588,23 @@
     points: 1000,
     food: 100,
     power: 50,
-    lastBalloonClaim: 0
+    lastBalloonClaim: 0,
+    marketStock: {
+      food: 8,
+      elephant: 3,
+      catapult: 2
+    },
+    marketPrices: {
+      food: 70,
+      elephant: 220,
+      catapult: 280
+    }
   };
 
   let generatedOtp = '';
 
   function init() {
-    const saved = localStorage.getItem('iran_bazaar_cinema_v5');
+    const saved = localStorage.getItem('iran_bazaar_cinema_v6');
     if (saved) state = Object.assign(state, JSON.parse(saved));
     populateNames();
     populateDynasties();
@@ -563,7 +614,7 @@
   }
 
   function saveState() {
-    localStorage.setItem('iran_bazaar_cinema_v5', JSON.stringify(state));
+    localStorage.setItem('iran_bazaar_cinema_v6', JSON.stringify(state));
     updateUI();
   }
 
@@ -572,6 +623,11 @@
     t.innerText = msg;
     t.style.display = 'block';
     setTimeout(() => { t.style.display = 'none'; }, 3200);
+  }
+
+  function scrollToSection(id) {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
   }
 
   function populateNames() {
@@ -648,22 +704,43 @@
     saveState();
   }
 
-  function buyGoods(type, cost) {
-    if (state.points < cost) {
+  /* خرید کالا همراه با کاهش موجودی و تورم قیمت */
+  function buyGoods(item) {
+    if (state.marketStock[item] <= 0) {
+      showToast('⚠️ موجودی این کالا در حجره تمام شده! منتظر ورود کاروان بمانید یا تجدید بار بزنید.');
+      return;
+    }
+
+    const price = state.marketPrices[item];
+    if (state.points < price) {
       showToast('❌ سکه کافی ندارید! در نبردها پیروز شوید یا شارژ کنید.');
       return;
     }
-    state.points -= cost;
-    if (type === 'food') {
+
+    state.points -= price;
+    state.marketStock[item]--;
+
+    // کمیاب شدن کالا و افزایش قیمت (تورم باستانی)
+    state.marketPrices[item] = Math.round(state.marketPrices[item] * 1.15);
+
+    if (item === 'food') {
       state.food = Math.min(100, state.food + 35);
-      showToast('🍞 جو و آب کاروان خریداری شد (+۳۵٪ آذوقه)');
-    } else if (type === 'elephant_armor') {
+      showToast(`🍞 جو و آب کاروان خریداری شد (+۳۵٪ آذوقه)`);
+    } else if (item === 'elephant') {
       state.power += 25;
-      showToast('🐘 فیل‌های زره‌پوش تجهیز شدند (+۲۵ قدرت)');
-    } else if (type === 'catapult_parts') {
+      showToast(`🐘 فیل‌های زره‌پوش به ارتش اضافه شدند (+۲۵ قدرت)`);
+    } else if (item === 'catapult') {
       state.power += 30;
-      showToast('☄️ منجنیق‌های غول‌پیکر مستقر شدند (+۳۰ قدرت)');
+      showToast(`☄️ ادوات منجنیق مستقر شدند (+۳۰ قدرت)`);
     }
+    saveState();
+  }
+
+  /* شارژ مجدد کاروان */
+  function restockCaravan() {
+    state.marketStock = { food: 8, elephant: 3, catapult: 2 };
+    state.marketPrices = { food: 70, elephant: 220, catapult: 280 };
+    showToast('🐫 کاروان جدید رسید! تمام موجودی حجره‌ها تجدید شد.');
     saveState();
   }
 
@@ -676,7 +753,7 @@
     }
   }
 
-  /* عملیات نبرد سینمایی و انیمیشن شلیک منجنیق */
+  /* عملیات نبرد سینمایی و انیمیشن پرتاب سنگ */
   function executeBattle(tactic) {
     if (state.food <= 15) {
       showToast('⚠️ سپاه آذوقه ندارد! ابتدا از راسته بازار جو و نان بخرید.');
@@ -684,7 +761,6 @@
     }
     state.food = Math.max(0, state.food - 15);
 
-    // انیمیشن سنگ پرتابی منجنیق
     if (tactic === 'catapult') {
       const rock = document.getElementById('catapultRock');
       rock.classList.remove('rock-flying');
@@ -708,7 +784,7 @@
     }, tactic === 'catapult' ? 1200 : 400);
   }
 
-  /* مینی‌گیم بالن هوای گرم - محدودیت ۲۴ ساعته */
+  /* مینی‌گیم بالن هوای گرم - ۲۴ ساعته */
   function claimDailyBalloon() {
     const now = Date.now();
     const oneDay = 24 * 60 * 60 * 1000;
@@ -771,31 +847,9 @@
     document.getElementById('foodVal').innerText = state.food + '٪';
     document.getElementById('powerVal').innerText = state.power;
 
-    const authCard = document.getElementById('authCard');
-    const regCard = document.getElementById('regCard');
-    const gamePlay = document.getElementById('gamePlaySection');
+    // به‌روزرسانی موجودی و قیمت‌های بازار
+    document.getElementById('stockFoodBadge').innerText = `موجودی حجره: ${state.marketStock.food} کیسه`;
+    document.getElementById('btnBuyFood').innerText = `${state.marketPrices.food} سکه`;
 
-    if (!state.verified) {
-      authCard.classList.remove('hidden');
-      regCard.classList.add('hidden');
-      gamePlay.classList.add('hidden');
-    } else if (state.verified && !state.heroName) {
-      authCard.classList.add('hidden');
-      regCard.classList.remove('hidden');
-      gamePlay.classList.add('hidden');
-    } else {
-      authCard.classList.add('hidden');
-      regCard.classList.add('hidden');
-      gamePlay.classList.remove('hidden');
-
-      document.getElementById('lblHero').innerText = state.heroName;
-      document.getElementById('lblDynasty').innerText = state.dynasty;
-      document.getElementById('lblClan').innerText = state.clan || 'بدون قبیله';
-      document.getElementById('clanIdCode').innerText = state.clanId || 'ثبت‌نشده';
-    }
-  }
-
-  window.onload = init;
-</script>
-</body>
-</html>
+    document.getElementById('stockElephantBadge').innerText = `موجودی: ${state.marketStock.elephant} راس`;
+    document.getElementById('btnBuyElephant').innerText = `${state.marketPrices.elep
