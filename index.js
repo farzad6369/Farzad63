@@ -1,117 +1,81 @@
+
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>پادشاهی بازار ایران</title>
-    <style>
-        :root { --gold: #d4af37; --bg-dark: #1a1a1a; }
-        body { margin: 0; padding: 0; font-family: 'Tahoma', sans-serif; background: #000; color: #fff; overflow-x: hidden; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#090807">
+<title>پادشاهی بازار ایران</title>
 
-        /* --- Landing Screen --- */
-        #landing-screen {
-            height: 100vh;
-            background: url('image_gen_f7cd82a7-ac0a-4ea6-a662-87a878828b52_0.png') no-repeat center center/cover;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-        }
-        .login-card { background: rgba(0,0,0,0.85); padding: 30px; border: 2px solid var(--gold); border-radius: 15px; width: 85%; max-width: 400px; text-align: center; }
-        
-        /* --- Dashboard --- */
-        #game-dashboard { display: none; padding: 20px; min-height: 100vh; background: var(--bg-dark); }
-        .stat-bar { display: flex; justify-content: space-between; background: #333; padding: 15px; border-radius: 10px; border-bottom: 2px solid var(--gold); }
-        .grid-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
-        .btn { background: #222; border: 1px solid var(--gold); padding: 20px; text-align: center; border-radius: 10px; color: var(--gold); cursor: pointer; font-weight: bold; }
-        
-        /* --- Utility --- */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; }
-        .modal-content { background: #111; padding: 20px; border: 2px solid var(--gold); border-radius: 10px; width: 80%; }
-        input, select { width: 100%; padding: 10px; margin: 10px 0; background: #222; border: 1px solid var(--gold); color: #fff; border-radius: 5px; }
-        button.main-btn { background: var(--gold); color: #000; padding: 15px; width: 100%; border: none; border-radius: 5px; font-weight: bold; margin-top: 10px; }
-    </style>
-</head>
-<body>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;800&display=swap');
 
-    <!-- صفحه ورود -->
-    <div id="landing-screen">
-        <div class="login-card">
-            <h2 style="color:var(--gold)">پادشاهی بازار ایران</h2>
-            <input type="text" id="username" placeholder="نام پادشاه...">
-            <select id="dynasty">
-                <option>سلسله: مادها</option>
-                <option>سلسله: هخامنشیان</option>
-                <option>سلسله: ساسانیان</option>
-            </select>
-            <button class="main-btn" onclick="startGame()">ورود به پادشاهی</button>
-        </div>
-    </div>
+:root{
+  --gold:#e8b84b;
+  --gold2:#ffd978;
+  --dark:#090807;
+  --panel:rgba(18,15,11,.82);
+  --line:rgba(232,184,75,.35);
+  --red:#bd493d;
+  --green:#45b879;
+}
 
-    <!-- داشبورد اصلی بازی -->
-    <div id="game-dashboard">
-        <div class="stat-bar">
-            <span>سکه: <b id="coin-val">1000</b></span>
-            <span>اقدام روزانه: <b id="action-val">5/5</b></span>
-        </div>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:Vazirmatn,Tahoma,sans-serif;
+  color:#fff8e8;
+  background:
+    linear-gradient(rgba(5,4,3,.7),rgba(5,4,3,.92)),
+    url("image_gen_f7cd82a7-ac0a-4ea6-a662-87a878828b52_0.png")
+    center/cover fixed;
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
 
-        <div class="grid-menu">
-            <div class="btn" onclick="performAction('battle')">نبرد استراتژیک</div>
-            <div class="btn" onclick="openModal('shop')">بازارچه</div>
-            <div class="btn" onclick="openModal('group')">قبایل</div>
-            <div class="btn" onclick="performAction('balloon')">بالن جایزه</div>
-        </div>
-    </div>
+.container{
+  width:min(100%,620px);
+  margin:auto;
+  padding:16px;
+}
+.logo{
+  text-align:center;
+  color:var(--gold2);
+  font-size:27px;
+  font-weight:800;
+  text-shadow:0 0 18px #8e5d16;
+  margin:10px 0 18px;
+}
+.card{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:18px;
+  margin-bottom:14px;
+  box-shadow:0 12px 35px #0009,inset 0 0 25px #e8b84b08;
+  backdrop-filter:blur(10px);
+}
+h2,h3{margin:4px 0 14px;color:var(--gold2)}
+p{color:#d8cdb8;line-height:1.8;margin:8px 0}
 
-    <!-- مودال عمومی -->
-    <div id="modal" class="modal" onclick="closeModal()">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <h3 id="modal-title" style="color:var(--gold)"></h3>
-            <p id="modal-body"></p>
-            <button class="main-btn" onclick="closeModal()">بستن</button>
-        </div>
-    </div>
+input,select{
+  width:100%;
+  border:1px solid var(--line);
+  border-radius:13px;
+  padding:13px;
+  margin:6px 0;
+  color:#fff;
+  background:#100e0b;
+  outline:none;
+}
+input:focus,select:focus{border-color:var(--gold2)}
 
-    <script>
-        let gameState = { coins: 1000, actions: 5 };
-
-        function startGame() {
-            const name = document.getElementById('username').value;
-            if(!name) return alert('نام را وارد کنید');
-            document.getElementById('landing-screen').style.display = 'none';
-            document.getElementById('game-dashboard').style.display = 'block';
-        }
-
-        function performAction(type) {
-            if(gameState.actions <= 0) return alert('اقدامات امروز تمام شده!');
-            
-            if(type === 'battle') {
-                const win = Math.random() > 0.5;
-                if(win) {
-                    gameState.coins += 300;
-                    alert('پیروز شدید! ۳۰۰ سکه دریافت کردید.');
-                } else {
-                    gameState.coins = Math.max(0, gameState.coins - 50);
-                    alert('شکست خوردید! ۵۰ سکه از دست دادید.');
-                }
-            } else if(type === 'balloon') {
-                gameState.coins += 100;
-                alert('بالن فرود آمد! ۱۰۰ سکه جایزه گرفتید.');
-            }
-
-            gameState.actions--;
-            updateUI();
-        }
-
-        function updateUI() {
-            document.getElementById('coin-val').innerText = gameState.coins;
-            document.getElementById('action-val').innerText = gameState.actions + '/5';
-        }
-
-        function openModal(type) {
-            document.getElementById('modal').style.display = 'flex';
-            document.getElementById('modal-title').innerText = type === 'shop' ? 'فروشگاه' : 'قبایل';
-            document.getElementById('modal-body').innerText = 'این بخش در نسخه جدید در حال توسعه است...';
-        }
-
-        function closeModal() { document.getElementById('modal').style.display = 'none'; }
-    </script>
-</body>
-</html>
+.btn{
+  width:100%;
+  border:0;
+  border-radius:14px;
+  padding:13px 14px;
+  margin-top:8px;
+  color:#211707;
